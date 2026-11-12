@@ -1,0 +1,63 @@
+// Extracted verbatim from the PUBLIC WEB bundle; formatting only.
+// Metro module 783; original bundle: App-659666a99f2f01630312af1cf82147aa.js
+// This is a bundled module factory, not an original TSX source file.
+__d(
+  function (g, r, i, a, m, _e, d) {
+    'use strict';
+    function t(t) {
+      return t && t.__esModule ? t : { default: t };
+    }
+    (Object.defineProperty(_e, '__esModule', { value: !0 }),
+      Object.defineProperty(_e, 'default', {
+        enumerable: !0,
+        get: function () {
+          return s;
+        },
+      }));
+    var e = r(d[0]),
+      n = r(d[1]),
+      l = t(r(d[2])),
+      o = t(r(d[3]));
+    function u({ intensity: t, tint: e }) {
+      const n = `saturate(180%) blur(${0.2 * Math.min(t, 100)}px)`;
+      return {
+        backgroundColor: (0, o.default)(Math.min(t, 100), e),
+        backdropFilter: n,
+        WebkitBackdropFilter: n,
+      };
+    }
+    var s = (0, n.forwardRef)(
+      ({ tint: t = 'default', intensity: o = 50, style: s, ...c }, f) => {
+        const y = (0, n.useRef)(null),
+          b = u({ tint: t, intensity: o });
+        return (
+          (0, n.useImperativeHandle)(
+            f,
+            () => ({
+              setNativeProps: (e) => {
+                if (!y.current?.style) return;
+                const n = u({
+                  intensity: e.style?.intensity ?? o,
+                  tint: t ?? 'default',
+                });
+                if (e.style)
+                  for (const t in e.style)
+                    'intensity' !== t && (y.current.style[t] = e.style[t]);
+                (n.backgroundColor &&
+                  (y.current.style.backgroundColor = n.backgroundColor),
+                  n.backdropFilter &&
+                    (y.current.style.backdropFilter = n.backdropFilter),
+                  (y.current.style.webkitBackdropFilter =
+                    n.WebkitBackdropFilter));
+              },
+            }),
+            [o, t],
+          ),
+          (0, e.jsx)(l.default, { ...c, style: [s, b], ref: y })
+        );
+      },
+    );
+  },
+  783,
+  [338, 2, 99, 784],
+);

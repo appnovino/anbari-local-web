@@ -1,0 +1,24 @@
+{
+  "id": "/",
+  "name": "myAnbari",
+  "short_name": "myAnbari",
+  "lang": "fa",
+  "dir": "rtl",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f1f2f4",
+  "theme_color": "#0d9488",
+  "icons": [
+    {
+      "src": "/anbari-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/anbari-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

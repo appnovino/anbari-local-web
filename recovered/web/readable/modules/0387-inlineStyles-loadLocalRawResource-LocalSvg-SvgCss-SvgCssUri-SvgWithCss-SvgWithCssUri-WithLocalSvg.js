@@ -1,0 +1,140 @@
+// Extracted verbatim from the PUBLIC WEB bundle; formatting only.
+// Metro module 387; original bundle: index-4d9dce5f8f280a52ba0b02536c7db777.js
+// This is a bundled module factory, not an original TSX source file.
+__d(
+  function (g, r, i, a, m, _e, d) {
+    'use strict';
+    (Object.defineProperty(_e, '__esModule', { value: !0 }),
+      Object.defineProperty(_e, 'inlineStyles', {
+        enumerable: !0,
+        get: function () {
+          return n.inlineStyles;
+        },
+      }),
+      Object.defineProperty(_e, 'loadLocalRawResource', {
+        enumerable: !0,
+        get: function () {
+          return n.loadLocalRawResource;
+        },
+      }),
+      Object.defineProperty(_e, 'LocalSvg', {
+        enumerable: !0,
+        get: function () {
+          return n.LocalSvg;
+        },
+      }),
+      Object.defineProperty(_e, 'SvgCss', {
+        enumerable: !0,
+        get: function () {
+          return n.SvgCss;
+        },
+      }),
+      Object.defineProperty(_e, 'SvgCssUri', {
+        enumerable: !0,
+        get: function () {
+          return n.SvgCssUri;
+        },
+      }),
+      Object.defineProperty(_e, 'SvgWithCss', {
+        enumerable: !0,
+        get: function () {
+          return n.SvgWithCss;
+        },
+      }),
+      Object.defineProperty(_e, 'SvgWithCssUri', {
+        enumerable: !0,
+        get: function () {
+          return n.SvgWithCssUri;
+        },
+      }),
+      Object.defineProperty(_e, 'WithLocalSvg', {
+        enumerable: !0,
+        get: function () {
+          return n.WithLocalSvg;
+        },
+      }),
+      Object.defineProperty(_e, 'default', {
+        enumerable: !0,
+        get: function () {
+          return f.default;
+        },
+      }),
+      Object.defineProperty(_e, 'camelCase', {
+        enumerable: !0,
+        get: function () {
+          return e.camelCase;
+        },
+      }),
+      Object.defineProperty(_e, 'fetchText', {
+        enumerable: !0,
+        get: function () {
+          return t.fetchText;
+        },
+      }),
+      Object.defineProperty(_e, 'parse', {
+        enumerable: !0,
+        get: function () {
+          return e.parse;
+        },
+      }),
+      Object.defineProperty(_e, 'SvgAst', {
+        enumerable: !0,
+        get: function () {
+          return e.SvgAst;
+        },
+      }),
+      Object.defineProperty(_e, 'SvgFromUri', {
+        enumerable: !0,
+        get: function () {
+          return e.SvgFromUri;
+        },
+      }),
+      Object.defineProperty(_e, 'SvgFromXml', {
+        enumerable: !0,
+        get: function () {
+          return e.SvgFromXml;
+        },
+      }),
+      Object.defineProperty(_e, 'SvgUri', {
+        enumerable: !0,
+        get: function () {
+          return e.SvgUri;
+        },
+      }),
+      Object.defineProperty(_e, 'SvgXml', {
+        enumerable: !0,
+        get: function () {
+          return e.SvgXml;
+        },
+      }));
+    var e = r(d[0]),
+      t = r(d[1]),
+      n = r(d[2]),
+      u = r(d[3]);
+    Object.keys(u).forEach(function (e) {
+      'default' === e ||
+        Object.prototype.hasOwnProperty.call(_e, e) ||
+        Object.defineProperty(_e, e, {
+          enumerable: !0,
+          get: function () {
+            return u[e];
+          },
+        });
+    });
+    var o = r(d[4]);
+    Object.keys(o).forEach(function (e) {
+      'default' === e ||
+        Object.prototype.hasOwnProperty.call(_e, e) ||
+        Object.defineProperty(_e, e, {
+          enumerable: !0,
+          get: function () {
+            return o[e];
+          },
+        });
+    });
+    var c,
+      f = (c = o) && c.__esModule ? c : { default: c };
+  },
+  387,
+  [388, 389, 405, 406, 391],
+);

@@ -1,0 +1,12 @@
+{
+  "name": "anbari-local-web",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Local browser runtime for the recovered myAnbari frontend",
+  "scripts": {
+    "build": "node tools/build-local-web.mjs",
+    "start": "node tools/build-local-web.mjs && python tools/serve-web.py --port 5173",
+    "test": "node --test tests/local-runtime.test.mjs",
+    "verify": "node tools/verify-local-build.mjs"
+  }
+}

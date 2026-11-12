@@ -1,0 +1,282 @@
+[
+  {
+    "id": 379,
+    "file": "modules/0379-PrimaryKey-OutlineKey-TextKey-DEMO_KEY_LABEL-AccountGate.js",
+    "endpoints": [
+      "/v1/shops",
+      "/v1/auth/logout",
+      "/v1/auth/otp/request",
+      "/v1/auth/otp/verify",
+      "/v1/auth/password/reset-code",
+      "/v1/auth/password/request",
+      "/v1/auth/password/reset",
+      "/v1/auth/login",
+      "/v1/auth/register",
+      "/v1/auth/methods",
+      "/v1/auth/session",
+      "/v1/auth/google",
+      "/v1/auth/google/create"
+    ]
+  },
+  {
+    "id": 415,
+    "file": "modules/0415-ApiError-messages-message-stockShortageMessage-recipeErrorMessage-samePersonMessage-describeError-reportE.js",
+    "endpoints": [
+      "/v1/auth/logout",
+      "/v1/shops/",
+      "/v1/client-errors"
+    ]
+  },
+  {
+    "id": 449,
+    "file": "modules/0449-DEMO_ONLY-freePlanPreview-noAlarmPreview-resetDemo-clearDemo-demoShopName-demoSnapshot-demoRequest.js",
+    "endpoints": [
+      "/v1/shops/",
+      "/v1/auth/session",
+      "/v1/me/preferences",
+      "/v1/client-errors",
+      "/v1/auth/logout",
+      "/v1/billing/catalog",
+      "/v1/shops"
+    ]
+  },
+  {
+    "id": 479,
+    "file": "modules/0479-BUSY_TOAST_GAP-isServerBusy-busyToastPath-onServerBusy-busyText-noteServerBusy-resetServerBusy-busyRetryD.js",
+    "endpoints": [
+      "/v1/auth/",
+      "/v1/client-errors"
+    ]
+  },
+  {
+    "id": 485,
+    "file": "modules/0485-refundFeeText-freePlanOf-LandingPage.js",
+    "endpoints": [
+      "/v1/visit"
+    ]
+  },
+  {
+    "id": 488,
+    "file": "modules/0488-notifyBillingChanged-OWNER_ONLY_NOTE-periodLabels-useBilling-useShopAccess-readBankAccount-saveBankAccoun.js",
+    "endpoints": [
+      "/v1/shops/",
+      "/v1/billing/catalog"
+    ]
+  },
+  {
+    "id": 512,
+    "file": "modules/0512-nationalMobile-otpCall-otpDetail-latinDigits-persianDigits-isMobile-toE164-countdown.js",
+    "endpoints": [
+      "/v1/auth/otp/call"
+    ]
+  },
+  {
+    "id": 514,
+    "file": "modules/0514-GmailLinkCardView-gmailHidden-GmailLinkCard-LinkGmailSuggestCard-LinkGmailSuggest-GooglePendingCard.js",
+    "endpoints": [
+      "/v1/auth/identities",
+      "/v1/auth/google/link",
+      "/v1/me/preferences",
+      "/v1/auth/methods"
+    ]
+  },
+  {
+    "id": 538,
+    "file": "modules/0538-PhoneCompleteCardView-PhoneStepView-CodeStepView-PhoneTakenView-moveConfirm-PhoneCompleteFlow-forgetIdent.js",
+    "endpoints": [
+      "/v1/me/preferences",
+      "/v1/me/phone/request",
+      "/v1/me/phone/verify",
+      "/v1/me/phone/call",
+      "/v1/me/phone/move",
+      "/v1/auth/identities"
+    ]
+  },
+  {
+    "id": 543,
+    "file": "modules/0543-onAppRestart-restartApp-DeviceLimitCard-DeviceLimitSheet-ReplacedDevicePopup.js",
+    "endpoints": [
+      "/v1/auth/devices/takeover"
+    ]
+  },
+  {
+    "id": 545,
+    "file": "modules/0545-iosNeedsHomeScreen-webPushState-enableWebPush-disableWebPush-forgetWebPushHere.js",
+    "endpoints": [
+      "/v1/push/public-key",
+      "/v1/push/status",
+      "/v1/push/subscribe"
+    ]
+  },
+  {
+    "id": 554,
+    "file": "modules/0554-STORE_KEY-Funnel.js",
+    "endpoints": [
+      "/v1/auth/email/start",
+      "/v1/auth/phone/start",
+      "/v1/auth/phone/register",
+      "/v1/auth/logout",
+      "/v1/auth/otp/verify"
+    ]
+  },
+  {
+    "id": 565,
+    "file": "modules/0565-PRESENCE_EVERY_MS-PRESENCE_IDLE_MS-startPresence.js",
+    "endpoints": [
+      "/v1/shops/"
+    ]
+  },
+  {
+    "id": 567,
+    "file": "modules/0567-collectReport-startDeviceReport.js",
+    "endpoints": [
+      "/v1/me/device"
+    ]
+  },
+  {
+    "id": 578,
+    "file": "modules/0578-CURRENCIES-CurrencyProvider-useCurrency-returnToProfile.js",
+    "endpoints": [
+      "/v1/fx"
+    ]
+  },
+  {
+    "id": 581,
+    "file": "modules/0581-installAuthFake.js",
+    "endpoints": [
+      "/v1/auth/methods",
+      "/v1/auth/session",
+      "/v1/auth/otp/request",
+      "/v1/auth/phone/start",
+      "/v1/auth/email/start",
+      "/v1/auth/otp/verify",
+      "/v1/"
+    ]
+  },
+  {
+    "id": 592,
+    "file": "modules/0592-checkVoice-aiMockActive-sendVoice-rereadVoice-MAX_REREAD_CHARS-apiRequest.js",
+    "endpoints": [
+      "/api/health",
+      "/api/voice",
+      "/api/image",
+      "/api/batch"
+    ]
+  },
+  {
+    "id": 598,
+    "file": "modules/0598-ErrorBoundary.js",
+    "endpoints": [
+      "/v1/auth/logout"
+    ]
+  },
+  {
+    "id": 603,
+    "file": "modules/0603-DevicesCardView-DevicesCard.js",
+    "endpoints": [
+      "/v1/auth/devices",
+      "/v1/auth/devices/"
+    ]
+  },
+  {
+    "id": 609,
+    "file": "modules/0609-ChequePhotosPreview-PhotoCropperPreview-LiveAgentHost-DataPanel-Workspace.js",
+    "endpoints": [
+      "/v1/billing/catalog",
+      "/v1/",
+      "/v1/shops/",
+      "/v1/me/preferences"
+    ]
+  },
+  {
+    "id": 628,
+    "file": "modules/0628-ProductPhoto.js",
+    "endpoints": [
+      "/v1/"
+    ]
+  },
+  {
+    "id": 699,
+    "file": "modules/0699-useInventory.js",
+    "endpoints": [
+      "/v1/shops/",
+      "/v1/realtime?ticket="
+    ]
+  },
+  {
+    "id": 706,
+    "file": "modules/0706-BatchPanel.js",
+    "endpoints": [
+      "/api/batch"
+    ]
+  },
+  {
+    "id": 723,
+    "file": "modules/0723-openSubscriptionPage-openSupportPage-openAccountPage-openPasswordPage-openReferralPage-FeatureTipsSetting.js",
+    "endpoints": [
+      "/v1/me/profile",
+      "/v1/auth/session",
+      "/v1/me/preferences"
+    ]
+  },
+  {
+    "id": 729,
+    "file": "modules/0729-AccountPanel.js",
+    "endpoints": [
+      "/v1/auth/session",
+      "/v1/me/password",
+      "/v1/auth/logout"
+    ]
+  },
+  {
+    "id": 825,
+    "file": "modules/0825-ImagePanel.js",
+    "endpoints": [
+      "/api/image"
+    ]
+  },
+  {
+    "id": 835,
+    "file": "modules/0835-allMovements-DataPanel.js",
+    "endpoints": [
+      "/v1/"
+    ]
+  },
+  {
+    "id": 861,
+    "file": "modules/0861-logEvent-flushAudit-startAudit.js",
+    "endpoints": [
+      "/api/events"
+    ]
+  },
+  {
+    "id": 887,
+    "file": "modules/0887-NudgeBanner.js",
+    "endpoints": [
+      "/v1/me/preferences"
+    ]
+  },
+  {
+    "id": 938,
+    "file": "modules/0938-readAgentStatus-sendAgentMessage-answerAgentConfirm-undoAgentDone-openVoiceSocket.js",
+    "endpoints": [
+      "/v1/live-agent/voice"
+    ]
+  },
+  {
+    "id": 953,
+    "file": "modules/0953-Integrations.js",
+    "endpoints": [
+      "/api/v1/me",
+      "/api/v1",
+      "/api/docs"
+    ]
+  },
+  {
+    "id": 992,
+    "file": "modules/0992-FAKE_FRONT-FAKE_BACK-ChequePhotosPreview.js",
+    "endpoints": [
+      "/v1/shops/"
+    ]
+  }
+]

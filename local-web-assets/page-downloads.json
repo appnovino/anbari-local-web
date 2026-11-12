@@ -1,0 +1,127 @@
+[
+  {
+    "route": "/install",
+    "bytes": 30617,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/badges/anardoni.png",
+      "/badges/sibapp.png",
+      "/badges/sibche.svg",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/guide",
+    "bytes": 63688,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/about",
+    "bytes": 29948,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/faq",
+    "bytes": 53242,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/pricing",
+    "bytes": 37780,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/compare",
+    "bytes": 35044,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/for",
+    "bytes": 33810,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/blog",
+    "bytes": 102822,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/blog-art/cheque-1600.webp",
+      "/blog-art/cheque-800.webp",
+      "/blog-art/helps-1600.webp",
+      "/blog-art/helps-800.webp",
+      "/blog-art/ledger-1600.webp",
+      "/blog-art/ledger-800.webp",
+      "/blog-art/mobile-1600.webp",
+      "/blog-art/mobile-800.webp",
+      "/blog-art/report-1600.webp",
+      "/blog-art/report-800.webp",
+      "/blog-art/stock-1600.webp",
+      "/blog-art/stock-800.webp",
+      "/blog-art/stocktake-1600.webp",
+      "/blog-art/stocktake-800.webp",
+      "/blog-art/voice-1600.webp",
+      "/blog-art/voice-800.webp",
+      "/blog-art/whatis-1600.webp",
+      "/blog-art/whatis-800.webp",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/privacy",
+    "bytes": 32189,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/terms",
+    "bytes": 30292,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/hesabdari-maghazeh",
+    "bytes": 36764,
+    "resources": [
+      "/anbari-mark.png",
+      "/anbari-touch-icon.png",
+      "/fonts/Vazirmatn-400.woff2"
+    ]
+  },
+  {
+    "route": "/api/docs",
+    "bytes": 28711,
+    "resources": []
+  }
+]

@@ -1,0 +1,7 @@
+.local-mode-button{position:fixed;bottom:8px;left:8px;z-index:10000;background:#0d766e;color:#fff;border:1px solid #fff;border-radius:8px;padding:5px 9px;font:11px 'Vazirmatn_500Medium',Tahoma,sans-serif;cursor:pointer;opacity:.92}
+.local-mode-button:focus-visible,.local-mode-panel button:focus-visible{outline:3px solid #14b8a6;outline-offset:3px}
+.local-mode-panel{box-sizing:border-box;max-width:min(480px,calc(100vw - 32px));border:1px solid #b9c6c4;border-radius:16px;padding:24px;background:#fff;color:#172725;font:14px/1.9 'Vazirmatn_400Regular',Tahoma,sans-serif}
+.local-mode-panel::backdrop{background:rgba(0,0,0,.35)}
+.local-mode-panel h2{font-size:19px;margin:0 0 14px}.local-mode-panel p{margin:8px 0 16px}
+.local-close{float:left;background:transparent;border:0;font-size:24px;cursor:pointer}.local-actions{display:flex;gap:10px;flex-wrap:wrap}.local-actions button{background:#edf7f5;color:#12534d;border:1px solid #b5d4cd;border-radius:8px;padding:8px 12px;font:inherit;cursor:pointer}.local-feedback{color:#34524c}.local-error{background:#9c2424}
+@media print{.local-mode-button,.local-mode-panel{display:none!important}}

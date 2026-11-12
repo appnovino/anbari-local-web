@@ -1,0 +1,48 @@
+// Extracted verbatim from the PUBLIC WEB bundle; formatting only.
+// Metro module 368; original bundle: index-4d9dce5f8f280a52ba0b02536c7db777.js
+// This is a bundled module factory, not an original TSX source file.
+__d(
+  function (g, r, i, a, m, _e, d) {
+    'use strict';
+    (Object.defineProperty(_e, '__esModule', { value: !0 }),
+      Object.defineProperty(_e, 'loadPromises', {
+        enumerable: !0,
+        get: function () {
+          return o;
+        },
+      }),
+      (_e.markLoaded = function (e) {
+        u[e] = !0;
+      }),
+      (_e.isLoadedInCache = c),
+      (_e.isLoadedNative = function (e) {
+        if (c(e)) return !0;
+        {
+          const n = t.default.getLoadedFonts();
+          return (
+            !!n?.length &&
+            (n.forEach((e) => {
+              u[e] = !0;
+            }),
+            e in u)
+          );
+        }
+      }),
+      (_e.purgeFontFamilyFromCache = function (e) {
+        delete u[e];
+      }),
+      (_e.purgeCache = function () {
+        u = {};
+      }));
+    var e,
+      n = r(d[0]),
+      t = (e = n) && e.__esModule ? e : { default: e };
+    const o = {};
+    let u = {};
+    function c(e) {
+      return e in u;
+    }
+  },
+  368,
+  [350],
+);

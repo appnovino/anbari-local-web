@@ -1,0 +1,1824 @@
+[
+  {
+    "feature": "app-shell",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 609,
+        "file": "modules/0609-ChequePhotosPreview-PhotoCropperPreview-LiveAgentHost-DataPanel-Workspace.js",
+        "exports": [
+          "ChequePhotosPreview",
+          "PhotoCropperPreview",
+          "LiveAgentHost",
+          "DataPanel",
+          "Workspace"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "products-inventory",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 430,
+        "file": "modules/0430-recipeUnits-recipeStockQuantity-recipeQuantity-validateRecipe-recipeErrorText.js",
+        "exports": [
+          "recipeUnits",
+          "recipeStockQuantity",
+          "recipeQuantity",
+          "validateRecipe",
+          "recipeErrorText"
+        ]
+      },
+      {
+        "id": 431,
+        "file": "modules/0431-QUANTITY_MAX-SCALE-q3-quantityScaled-addQuantity-subQuantity-validQuantity-parseQuantity.js",
+        "exports": [
+          "QUANTITY_MAX",
+          "SCALE",
+          "q3",
+          "quantityScaled",
+          "addQuantity",
+          "subQuantity",
+          "validQuantity",
+          "parseQuantity",
+          "convertPack"
+        ]
+      },
+      {
+        "id": 432,
+        "file": "modules/0432-UNITS-CONTENT_UNITS-isCountUnit-validContent-unitSwitchable-isUnit-fixedFactor-convertFixed.js",
+        "exports": [
+          "UNITS",
+          "CONTENT_UNITS",
+          "isCountUnit",
+          "validContent",
+          "unitSwitchable",
+          "isUnit",
+          "fixedFactor",
+          "convertFixed",
+          "UNIT_GROUPS",
+          "unitWheelRows",
+          "COUNT_UNITS",
+          "unitCompatible"
+        ]
+      },
+      {
+        "id": 433,
+        "file": "modules/0433-OVERSELL_MODES-oversellMode-oversellPasses-stockShortage-OUT_OF_STOCK-isOutOfStock-isNegativeStock-NEGATI.js",
+        "exports": [
+          "OVERSELL_MODES",
+          "oversellMode",
+          "oversellPasses",
+          "stockShortage",
+          "OUT_OF_STOCK",
+          "isOutOfStock",
+          "isNegativeStock",
+          "NEGATIVE_STOCK",
+          "stockNumber",
+          "basketShortageText",
+          "receiveMissingLabel",
+          "shortageText",
+          "stockAmount",
+          "oversellQuestion",
+          "fillAmounts",
+          "oversellFillText",
+          "OVERSELL_FORBID_HINT"
+        ]
+      },
+      {
+        "id": 439,
+        "file": "modules/0439-parseQuantity-normalizeName-exactMatch-previewBalance-tryPreviewBalance-suggestProducts-stockError-applyD.js",
+        "exports": [
+          "parseQuantity",
+          "normalizeName",
+          "exactMatch",
+          "previewBalance",
+          "tryPreviewBalance",
+          "suggestProducts",
+          "stockError",
+          "applyDraft",
+          "madeStockAfter",
+          "COUNT_MAX",
+          "applyDraftBatch",
+          "validateImportRows",
+          "applyImport"
+        ]
+      },
+      {
+        "id": 441,
+        "file": "modules/0441-DEFAULT_TIER_NAMES-SALE_PRICES_MAX-cleanSalePrices-salePriceOptions-SALE_PRICES_OLD_APP-keepLaterSalePric.js",
+        "exports": [
+          "DEFAULT_TIER_NAMES",
+          "SALE_PRICES_MAX",
+          "cleanSalePrices",
+          "salePriceOptions",
+          "SALE_PRICES_OLD_APP",
+          "keepLaterSalePrices",
+          "isNamedSalePrice",
+          "salePricesEqual"
+        ]
+      },
+      {
+        "id": 452,
+        "file": "modules/0452-suggestProducts-cleanDetails-saveProduct-fillMissingPrices-editCategory-removeCategory-isLowStock-deleteP.js",
+        "exports": [
+          "suggestProducts",
+          "cleanDetails",
+          "saveProduct",
+          "fillMissingPrices",
+          "editCategory",
+          "removeCategory",
+          "isLowStock",
+          "deleteProducts",
+          "archiveProduct",
+          "restoreProduct",
+          "clearSampleData",
+          "missingPrice",
+          "priceMissingFor",
+          "missingPriceParts",
+          "catalogBrands",
+          "shelfRank",
+          "filterCatalog",
+          "productFamily",
+          "toProductChoice",
+          "productChoiceRequired",
+          "preferUnit",
+          "nameSimilarity",
+          "CLOSE_MATCH",
+          "sameName",
+          "closestProduct",
+          "linkActions",
+          "latinNameMatch",
+          "latinWordsSaid",
+          "latinNewName",
+          "detailWord",
+          "nearMissProduct",
+          "spellingKey",
+          "similarNames",
+          "differentProducts",
+          "closeSuggestion",
+          "applySpokenSizes",
+          "countAsPack"
+        ]
+      },
+      {
+        "id": 453,
+        "file": "modules/0453-MODEL_MAX-VARIANT_VALUE_MAX-MAX_SIZES-MAX_COLORS-MAX_VARIANTS_PER_CALL-SIZE_PRESETS-COLOR_PRESETS-cleanVa.js",
+        "exports": [
+          "MODEL_MAX",
+          "VARIANT_VALUE_MAX",
+          "MAX_SIZES",
+          "MAX_COLORS",
+          "MAX_VARIANTS_PER_CALL",
+          "SIZE_PRESETS",
+          "COLOR_PRESETS",
+          "cleanVariantValue",
+          "isClothingSize",
+          "isColorWord",
+          "sameValue",
+          "sortSizes",
+          "variantName",
+          "variantModel",
+          "groupModels",
+          "findVariant",
+          "variantRequest",
+          "colorBlocks",
+          "pricesDiffer"
+        ]
+      },
+      {
+        "id": 547,
+        "file": "modules/0547-loadInventory-saveInventory.js",
+        "exports": [
+          "loadInventory",
+          "saveInventory"
+        ]
+      },
+      {
+        "id": 548,
+        "file": "modules/0548-validateStored.js",
+        "exports": [
+          "validateStored"
+        ]
+      },
+      {
+        "id": 699,
+        "file": "modules/0699-useInventory.js",
+        "exports": [
+          "useInventory"
+        ]
+      },
+      {
+        "id": 700,
+        "file": "modules/0700-movementDrafts-overlayPending.js",
+        "exports": [
+          "movementDrafts",
+          "overlayPending"
+        ]
+      },
+      {
+        "id": 701,
+        "file": "modules/0701-DEFAULT_CATALOG_SORT-catalogSorts-catalogSort-newestDate-sortCatalog-datesIncomplete.js",
+        "exports": [
+          "DEFAULT_CATALOG_SORT",
+          "catalogSorts",
+          "catalogSort",
+          "newestDate",
+          "sortCatalog",
+          "datesIncomplete"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "sales-invoices",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 460,
+        "file": "modules/0460-DISCOUNT_REASON_MAX-DISCOUNT_REASONS-roundToman-lineGross-cleanDiscount-discountOn-shareOut-priceSale.js",
+        "exports": [
+          "DISCOUNT_REASON_MAX",
+          "DISCOUNT_REASONS",
+          "roundToman",
+          "lineGross",
+          "cleanDiscount",
+          "discountOn",
+          "shareOut",
+          "priceSale",
+          "discountLabel"
+        ]
+      },
+      {
+        "id": 473,
+        "file": "modules/0473-isFullStaff-isLead-seeRules-reportsVisible-connectorVisible-canLead-canWriteNotes-roleKinds.js",
+        "exports": [
+          "isFullStaff",
+          "isLead",
+          "seeRules",
+          "reportsVisible",
+          "connectorVisible",
+          "canLead",
+          "canWriteNotes",
+          "roleKinds",
+          "canInvoice",
+          "discountMax",
+          "canEditSalePrice",
+          "canCount",
+          "canEditHistory",
+          "ROLE_PRESETS",
+          "FULL_ACCESS_HINT",
+          "DEFAULT_DISCOUNT_MAX",
+          "ROLE_NAME_MAX",
+          "presetAccess",
+          "matchPreset",
+          "CHANGED_MAX",
+          "tickDiff",
+          "nearPreset",
+          "roleTitle",
+          "parsePercent",
+          "lastSeenText",
+          "staffPausedText",
+          "staffTabs"
+        ]
+      },
+      {
+        "id": 474,
+        "file": "modules/0474-PARTY_LIMITS-EMPLOYEE_LIMIT-SIGNATURE_WIDTH-SIGNATURE_MAX_CHARS-signaturePathPattern-isSignature-cleanInv.js",
+        "exports": [
+          "PARTY_LIMITS",
+          "EMPLOYEE_LIMIT",
+          "SIGNATURE_WIDTH",
+          "SIGNATURE_MAX_CHARS",
+          "signaturePathPattern",
+          "isSignature",
+          "cleanInvoiceHeader",
+          "ADDRESS_BOOK",
+          "cleanAddressBook",
+          "addressBookWith",
+          "addressBookEdit",
+          "signatureFromStrokes"
+        ]
+      },
+      {
+        "id": 475,
+        "file": "modules/0475-bookKey-BOOK_KEY_PATTERN-bookOrder-withBalances-settleIndex-bookFold-allocatePayments-pendingTotals.js",
+        "exports": [
+          "bookKey",
+          "BOOK_KEY_PATTERN",
+          "bookOrder",
+          "withBalances",
+          "settleIndex",
+          "bookFold",
+          "allocatePayments",
+          "pendingTotals",
+          "debtDays",
+          "liveAccount",
+          "toman",
+          "balanceState",
+          "balanceWord",
+          "ownerBalance",
+          "rowBalance",
+          "monthEndLine",
+          "rowAmountWords",
+          "ownerShort",
+          "afterChequesLine",
+          "dayText",
+          "dateText",
+          "chequeNumber",
+          "chequeName",
+          "chequeStatusWord",
+          "chequeLine",
+          "pastDue",
+          "rowTitle",
+          "rowDetail",
+          "zeroEffect",
+          "statementWords",
+          "IMAGE_ROWS",
+          "statementModel",
+          "dayIso",
+          "statementText",
+          "statementHtml"
+        ]
+      },
+      {
+        "id": 476,
+        "file": "modules/0476-invoiceLayouts-invoicePapers-invoiceLayoutOf-invoicePaperFor-BRAND_TEAL-invoiceThemes-invoiceImagePattern.js",
+        "exports": [
+          "invoiceLayouts",
+          "invoicePapers",
+          "invoiceLayoutOf",
+          "invoicePaperFor",
+          "BRAND_TEAL",
+          "invoiceThemes",
+          "invoiceImagePattern",
+          "isInvoiceImage",
+          "invoiceAccentInk",
+          "resolveInvoiceTheme"
+        ]
+      },
+      {
+        "id": 519,
+        "file": "modules/0519-defaultCards-OLD_DEFAULT_LAYOUTS-tutorialKey-businessKey-starterKey-rememberedBusiness-rememberBusiness-r.js",
+        "exports": [
+          "defaultCards",
+          "OLD_DEFAULT_LAYOUTS",
+          "tutorialKey",
+          "businessKey",
+          "starterKey",
+          "rememberedBusiness",
+          "rememberBusiness",
+          "readNotebookShop",
+          "patchNotebookBusiness",
+          "patchNotebookSettings",
+          "uniqueCards",
+          "postSale",
+          "cancelDocument",
+          "postReturn",
+          "postPurchase",
+          "postReceipt",
+          "listSales",
+          "listInvoices",
+          "issuedSales",
+          "markSaleIssued",
+          "listTopContacts",
+          "issueWalkInSale",
+          "setSaleBuyer",
+          "fillSalePrices",
+          "getSale",
+          "listPurchases",
+          "getPurchaseView",
+          "addPurchasePhoto",
+          "deletePurchasePhoto",
+          "setPurchaseSupplier",
+          "getPurchase",
+          "shareSale",
+          "getRecipe",
+          "putRecipe",
+          "getRecipes",
+          "getRecipeAlerts",
+          "markRecipeAlertSeen",
+          "createProduct",
+          "adjustPrices",
+          "readInventoryRevision",
+          "listMovements",
+          "idempotencyKey",
+          "listContacts",
+          "createContact",
+          "updateContact",
+          "archiveContact",
+          "listSameName",
+          "readContact",
+          "readCurrentAccount",
+          "setBookNote",
+          "readStatement",
+          "shareStatement",
+          "readLedgerSummary",
+          "listCheques",
+          "rememberCheque",
+          "transitionCheque",
+          "putChequePhoto",
+          "deleteChequePhoto",
+          "recordPayment",
+          "recordDebt",
+          "settleContact",
+          "reverseDebt",
+          "reversePayment",
+          "readSummary",
+          "readInsight",
+          "readActivity",
+          "saveActivityNote",
+          "putProductContent"
+        ]
+      },
+      {
+        "id": 788,
+        "file": "modules/0788-accountSale-saleMethod-walkInMethod-saleHeading-withVoiceSales-rowSale-voiceSaleCustomer-voiceSaleBody.js",
+        "exports": [
+          "accountSale",
+          "saleMethod",
+          "walkInMethod",
+          "saleHeading",
+          "withVoiceSales",
+          "rowSale",
+          "voiceSaleCustomer",
+          "voiceSaleBody",
+          "saleLines",
+          "saleTotal",
+          "movementsReceipt",
+          "voiceSaleRequest",
+          "voiceSaleRejected",
+          "saveVoiceSale"
+        ]
+      },
+      {
+        "id": 798,
+        "file": "modules/0798-VoiceSaleCard.js",
+        "exports": [
+          "VoiceSaleCard"
+        ]
+      },
+      {
+        "id": 801,
+        "file": "modules/0801-receiptText-Receipt-SalesList.js",
+        "exports": [
+          "receiptText",
+          "Receipt",
+          "SalesList"
+        ]
+      },
+      {
+        "id": 802,
+        "file": "modules/0802-InvoiceDesignSheet.js",
+        "exports": [
+          "InvoiceDesignSheet"
+        ]
+      },
+      {
+        "id": 803,
+        "file": "modules/0803-invoiceThemes-resolveInvoiceTheme-invoiceLabels-paymentLine-invoiceNumber-invoiceAmount-extraLabel-unpric.js",
+        "exports": [
+          "invoiceThemes",
+          "resolveInvoiceTheme",
+          "invoiceLabels",
+          "paymentLine",
+          "invoiceNumber",
+          "invoiceAmount",
+          "extraLabel",
+          "unpricedLines",
+          "invoicePayment",
+          "lineDiscount",
+          "nationalIdLabel",
+          "invoiceModel",
+          "invoiceText",
+          "receiptText"
+        ]
+      },
+      {
+        "id": 812,
+        "file": "modules/0812-WEB_INVOICE_FONTS-canPrintNative-printInvoice-printHtml-htmlPdf-invoicePdf.js",
+        "exports": [
+          "WEB_INVOICE_FONTS",
+          "canPrintNative",
+          "printInvoice",
+          "printHtml",
+          "htmlPdf",
+          "invoicePdf"
+        ]
+      },
+      {
+        "id": 814,
+        "file": "modules/0814-applyInvoiceHeader-withParty-withEmployee-withSignature-partyDefaults-signatureSvg-isInvoiceLead-seesPers.js",
+        "exports": [
+          "applyInvoiceHeader",
+          "withParty",
+          "withEmployee",
+          "withSignature",
+          "partyDefaults",
+          "signatureSvg",
+          "isInvoiceLead",
+          "seesPersonDetails",
+          "canEditInvoiceHead"
+        ]
+      },
+      {
+        "id": 819,
+        "file": "modules/0819-canInvoice-InvoiceSend.js",
+        "exports": [
+          "canInvoice",
+          "InvoiceSend"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "contacts-ledger",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 438,
+        "file": "modules/0438-nameWords-coreText-nameCore-normalizeMobile-validMobile-phoneText-maskPhone-sameNameContacts.js",
+        "exports": [
+          "nameWords",
+          "coreText",
+          "nameCore",
+          "normalizeMobile",
+          "validMobile",
+          "phoneText",
+          "maskPhone",
+          "sameNameContacts",
+          "phoneRule",
+          "phoneRuleText",
+          "phoneRequirement",
+          "cannotTellApart",
+          "confusableGroups",
+          "confusableText"
+        ]
+      },
+      {
+        "id": 444,
+        "file": "modules/0444-SETTLE_NOTE-FORGIVE_NOTE-chequesNotInBalance-openBalance-settlementPlan-SETTLE_MESSAGES-settleChoices.js",
+        "exports": [
+          "SETTLE_NOTE",
+          "FORGIVE_NOTE",
+          "chequesNotInBalance",
+          "openBalance",
+          "settlementPlan",
+          "SETTLE_MESSAGES",
+          "settleChoices"
+        ]
+      },
+      {
+        "id": 464,
+        "file": "modules/0464-isPacked-normalizedLine-saidLine-saidAlive-grossOf-lineDiscount-previewCart-bodyLines.js",
+        "exports": [
+          "isPacked",
+          "normalizedLine",
+          "saidLine",
+          "saidAlive",
+          "grossOf",
+          "lineDiscount",
+          "previewCart",
+          "bodyLines",
+          "missingCostLines",
+          "discountLimit",
+          "overLimit",
+          "withUnit",
+          "addProduct",
+          "splitLine",
+          "canAutoFocusWedge",
+          "addToPicks",
+          "MEASURED_UNITS",
+          "isMeasured",
+          "smallUnit",
+          "addPicked",
+          "stepPick",
+          "pickedSummary",
+          "customerName",
+          "needsCustomer",
+          "customerBody",
+          "rememberCustomer",
+          "customerChoices",
+          "cartShortages",
+          "partyContacts",
+          "NEW_PRODUCT_PREFIX",
+          "isNewProduct",
+          "realId",
+          "newProductOf",
+          "newProductData",
+          "newProductLine",
+          "newProductBody",
+          "nameTaken",
+          "lastBoughtMap",
+          "lastBuyPrice",
+          "buyPriceChange",
+          "TIER_KEYS",
+          "tierOptions",
+          "rememberedTier",
+          "needsTierChoice",
+          "tierPrice",
+          "addPriceOf",
+          "applyTier",
+          "shortTierName",
+          "lineTierName",
+          "priceChoiceOf",
+          "boxPrice",
+          "manualPricePick",
+          "manualPriceTyped",
+          "manualDefaultPrice"
+        ]
+      },
+      {
+        "id": 518,
+        "file": "modules/0518-ledgerReadOnly-ledgerReadOnlyFor-ledgerScreensOpen-useLedgerReadOnly-LEDGER_READ_ONLY_LINE.js",
+        "exports": [
+          "ledgerReadOnly",
+          "ledgerReadOnlyFor",
+          "ledgerScreensOpen",
+          "useLedgerReadOnly",
+          "LEDGER_READ_ONLY_LINE"
+        ]
+      },
+      {
+        "id": 520,
+        "file": "modules/0520-PEOPLE_FILTERS-peopleQuery-fitsPeople-peopleName-personName-PERSON_TABS-WARM_PEOPLE-ledgerWaits.js",
+        "exports": [
+          "PEOPLE_FILTERS",
+          "peopleQuery",
+          "fitsPeople",
+          "peopleName",
+          "personName",
+          "PERSON_TABS",
+          "WARM_PEOPLE",
+          "ledgerWaits",
+          "noteOpen",
+          "warmLedger",
+          "warmPerson",
+          "knownContact",
+          "seedContact",
+          "rememberContact",
+          "moveBalance"
+        ]
+      },
+      {
+        "id": 521,
+        "file": "modules/0521-listFavorites-readHabits-patchContact-createContactPlus.js",
+        "exports": [
+          "listFavorites",
+          "readHabits",
+          "patchContact",
+          "createContactPlus"
+        ]
+      },
+      {
+        "id": 527,
+        "file": "modules/0527-normalizeLedgerRoute-swipeBackRoute-ledgerEntries.js",
+        "exports": [
+          "normalizeLedgerRoute",
+          "swipeBackRoute",
+          "ledgerEntries"
+        ]
+      },
+      {
+        "id": 529,
+        "file": "modules/0529-latin-parseToman-groupToman-todayParts-partsToIso-isoToParts-daysUntil-dueLabel.js",
+        "exports": [
+          "latin",
+          "parseToman",
+          "groupToman",
+          "todayParts",
+          "partsToIso",
+          "isoToParts",
+          "daysUntil",
+          "dueLabel",
+          "jalaliDay",
+          "chequeFinished",
+          "filterCheques",
+          "contactKey",
+          "contactTitle",
+          "exactContacts",
+          "matchContacts",
+          "spokenPhone",
+          "spokenName",
+          "phoneFits",
+          "contactsByPhone",
+          "sureContact",
+          "maskedPhone",
+          "NEW_CONTACT"
+        ]
+      },
+      {
+        "id": 888,
+        "file": "modules/0888-Contacts-Cheques-Statement-ledgerEntries-NotebookLedgerRoutes-LedgerSection-AccountOption.js",
+        "exports": [
+          "Contacts",
+          "Cheques",
+          "Statement",
+          "ledgerEntries",
+          "NotebookLedgerRoutes",
+          "LedgerSection",
+          "AccountOption"
+        ]
+      },
+      {
+        "id": 889,
+        "file": "modules/0889-Contacts-ContactForm-Balance.js",
+        "exports": [
+          "Contacts",
+          "ContactForm",
+          "Balance"
+        ]
+      },
+      {
+        "id": 891,
+        "file": "modules/0891-ContactPage.js",
+        "exports": [
+          "ContactPage"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "expenses",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 443,
+        "file": "modules/0443-EXPENSE_CATEGORIES-EXPENSE_METHODS-REMINDER_REPEATS-DEFAULT_REMINDER_MINUTE-expenseCategoryFa-expenseCate.js",
+        "exports": [
+          "EXPENSE_CATEGORIES",
+          "EXPENSE_METHODS",
+          "REMINDER_REPEATS",
+          "DEFAULT_REMINDER_MINUTE",
+          "expenseCategoryFa",
+          "expenseCategoryHint",
+          "expenseMethodFa",
+          "expenseCategoryFor",
+          "isExpenseCategory",
+          "voiceExpenseCategory",
+          "isoDate",
+          "monthOf",
+          "monthRange",
+          "shiftMonth",
+          "todayIn",
+          "expenseTotals",
+          "validReminder",
+          "reminderTimes",
+          "nextReminderTime"
+        ]
+      },
+      {
+        "id": 522,
+        "file": "modules/0522-listExpenses-createExpense-updateExpense-deleteExpense-listExpenseReminders-createExpenseReminder-deleteE.js",
+        "exports": [
+          "listExpenses",
+          "createExpense",
+          "updateExpense",
+          "deleteExpense",
+          "listExpenseReminders",
+          "createExpenseReminder",
+          "deleteExpenseReminder"
+        ]
+      },
+      {
+        "id": 623,
+        "file": "modules/0623-expensesEntries-openExpenses-expensesAllowedFor.js",
+        "exports": [
+          "expensesEntries",
+          "openExpenses",
+          "expensesAllowedFor"
+        ]
+      },
+      {
+        "id": 850,
+        "file": "modules/0850-netAfterExpenses-ExpenseNetLine.js",
+        "exports": [
+          "netAfterExpenses",
+          "ExpenseNetLine"
+        ]
+      },
+      {
+        "id": 862,
+        "file": "modules/0862-CATEGORY_ICONS-monthTitle-scheduleText-expenseTitle-ExpensesRoutes-ExpensesScreen-emptyExpenseDraft.js",
+        "exports": [
+          "CATEGORY_ICONS",
+          "monthTitle",
+          "scheduleText",
+          "expenseTitle",
+          "ExpensesRoutes",
+          "ExpensesScreen",
+          "emptyExpenseDraft"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "cheques",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 530,
+        "file": "modules/0530-SOON_DAYS-dayDiff-deviceDay-chequeTag-chequeDueNote-sortCheques.js",
+        "exports": [
+          "SOON_DAYS",
+          "dayDiff",
+          "deviceDay",
+          "chequeTag",
+          "chequeDueNote",
+          "sortCheques"
+        ]
+      },
+      {
+        "id": 626,
+        "file": "modules/0626-CHEQUE_OPEN_CAP-CHEQUE_HISTORY-loadAllCheques-Cheques.js",
+        "exports": [
+          "CHEQUE_OPEN_CAP",
+          "CHEQUE_HISTORY",
+          "loadAllCheques",
+          "Cheques"
+        ]
+      },
+      {
+        "id": 627,
+        "file": "modules/0627-chequePhotoError-ChequePhotosField.js",
+        "exports": [
+          "chequePhotoError",
+          "ChequePhotosField"
+        ]
+      },
+      {
+        "id": 653,
+        "file": "modules/0653-CHEQUE_LONG_SIDE-CHEQUE_PHOTO_MAX_BYTES-CHEQUE_QUALITY_STEPS-base64Bytes-chequeResize-fitChequePhoto-INVO.js",
+        "exports": [
+          "CHEQUE_LONG_SIDE",
+          "CHEQUE_PHOTO_MAX_BYTES",
+          "CHEQUE_QUALITY_STEPS",
+          "base64Bytes",
+          "chequeResize",
+          "fitChequePhoto",
+          "INVOICE_LONG_SIDE",
+          "INVOICE_PHOTO_MAX_BYTES",
+          "invoiceResize",
+          "fitInvoicePhoto"
+        ]
+      },
+      {
+        "id": 654,
+        "file": "modules/0654-onPendingChequePhotos-pendingChequePhotos-flushChequePhotos-attachChequePhotos-dropPendingChequePhoto-sho.js",
+        "exports": [
+          "onPendingChequePhotos",
+          "pendingChequePhotos",
+          "flushChequePhotos",
+          "attachChequePhotos",
+          "dropPendingChequePhoto",
+          "shownPhotos",
+          "chequePhotoError",
+          "photoSaveNote"
+        ]
+      },
+      {
+        "id": 655,
+        "file": "modules/0655-withPending-pendingAfterSend-DEFINITIVE_PHOTO_CODES-STOP_CODES-MAX_WAITING_DAYS-photoAnswer-retryDelayMs-.js",
+        "exports": [
+          "withPending",
+          "pendingAfterSend",
+          "DEFINITIVE_PHOTO_CODES",
+          "STOP_CODES",
+          "MAX_WAITING_DAYS",
+          "photoAnswer",
+          "retryDelayMs",
+          "isDue",
+          "tooOld",
+          "postponed"
+        ]
+      },
+      {
+        "id": 656,
+        "file": "modules/0656-ChequeSheet.js",
+        "exports": [
+          "ChequeSheet"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "reports",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 455,
+        "file": "modules/0455-SUMMARY_PERIODS-isSummaryPeriod-SUMMARY_TOP-SUMMARY_MISSING-shiftDate-localDate-measuredUnit-anyUnits.js",
+        "exports": [
+          "SUMMARY_PERIODS",
+          "isSummaryPeriod",
+          "SUMMARY_TOP",
+          "SUMMARY_MISSING",
+          "shiftDate",
+          "localDate",
+          "measuredUnit",
+          "anyUnits",
+          "summarizeSales",
+          "summarizeLocal",
+          "lowStockList",
+          "outOfStockList"
+        ]
+      },
+      {
+        "id": 456,
+        "file": "modules/0456-priceFields-completePrices-revenueIncomplete-profitIncomplete.js",
+        "exports": [
+          "priceFields",
+          "completePrices",
+          "revenueIncomplete",
+          "profitIncomplete"
+        ]
+      },
+      {
+        "id": 457,
+        "file": "modules/0457-greetingText-runoutSoon-homeInsight-INSIGHT_FALLBACK-THOUGHT_MAX-historyLine-ruleThought-insightLines.js",
+        "exports": [
+          "greetingText",
+          "runoutSoon",
+          "homeInsight",
+          "INSIGHT_FALLBACK",
+          "THOUGHT_MAX",
+          "historyLine",
+          "ruleThought",
+          "insightLines",
+          "INSIGHT_REFRESH_HOURS",
+          "insightSlot",
+          "dailyStats",
+          "LEARN_DAYS",
+          "activeDayCount",
+          "learnProgress",
+          "buildDailyInsight",
+          "activityFromMovements",
+          "localDailyInsight",
+          "thoughtNumbers",
+          "cleanThought",
+          "cleanTranslatedThought",
+          "updatedLabel"
+        ]
+      },
+      {
+        "id": 838,
+        "file": "modules/0838-Reports.js",
+        "exports": [
+          "Reports"
+        ]
+      },
+      {
+        "id": 839,
+        "file": "modules/0839-reportFa-DEFAULT_REPORT_DAYS-SalesReport.js",
+        "exports": [
+          "reportFa",
+          "DEFAULT_REPORT_DAYS",
+          "SalesReport"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "reminders",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 454,
+        "file": "modules/0454-alarmKinds-validateAlarmRule-evaluateAlarms-saveAlarm.js",
+        "exports": [
+          "alarmKinds",
+          "validateAlarmRule",
+          "evaluateAlarms",
+          "saveAlarm"
+        ]
+      },
+      {
+        "id": 523,
+        "file": "modules/0523-syncCampaignNotifications-syncReminderNotifications-ensureReminderNotifications-enableNotifications-notif.js",
+        "exports": [
+          "syncCampaignNotifications",
+          "syncReminderNotifications",
+          "ensureReminderNotifications",
+          "enableNotifications",
+          "notificationStatus",
+          "testNotification",
+          "notifyStockAlerts",
+          "listenNotificationTap"
+        ]
+      },
+      {
+        "id": 524,
+        "file": "modules/0524-stockNotification.js",
+        "exports": [
+          "stockNotification"
+        ]
+      },
+      {
+        "id": 618,
+        "file": "modules/0618-reminderChoices-whenLabel-reminderText-ReminderSheet.js",
+        "exports": [
+          "reminderChoices",
+          "whenLabel",
+          "reminderText",
+          "ReminderSheet"
+        ]
+      },
+      {
+        "id": 620,
+        "file": "modules/0620-WhenSheet-RemindersPanel.js",
+        "exports": [
+          "WhenSheet",
+          "RemindersPanel"
+        ]
+      },
+      {
+        "id": 624,
+        "file": "modules/0624-validRoutine-routineSlots-PAST_SLOT_MS-CHEQUE_DAYS-chequeAlarmTimes-expenseReminderText-reminderItems.js",
+        "exports": [
+          "validRoutine",
+          "routineSlots",
+          "PAST_SLOT_MS",
+          "CHEQUE_DAYS",
+          "chequeAlarmTimes",
+          "expenseReminderText",
+          "reminderItems"
+        ]
+      },
+      {
+        "id": 625,
+        "file": "modules/0625-HomeAlarms-HomeAlarmList-AlarmHistorySheet.js",
+        "exports": [
+          "HomeAlarms",
+          "HomeAlarmList",
+          "AlarmHistorySheet"
+        ]
+      },
+      {
+        "id": 683,
+        "file": "modules/0683-FIRED_VISIBLE_MS-UPCOMING_MS-HOME_ALARM_ROWS-HOME_ALARM_MAX-alarmText-alarmState-routineCopy-homeAlarms.js",
+        "exports": [
+          "FIRED_VISIBLE_MS",
+          "UPCOMING_MS",
+          "HOME_ALARM_ROWS",
+          "HOME_ALARM_MAX",
+          "alarmText",
+          "alarmState",
+          "routineCopy",
+          "homeAlarms",
+          "homeAlarmsScroll",
+          "nextAlarmChange"
+        ]
+      },
+      {
+        "id": 684,
+        "file": "modules/0684-HISTORY_KEEP_MS-HISTORY_MAX-emptyHistory-recordAlarmHistory-historyList-historyWhen-loadAlarmHistory-save.js",
+        "exports": [
+          "HISTORY_KEEP_MS",
+          "HISTORY_MAX",
+          "emptyHistory",
+          "recordAlarmHistory",
+          "historyList",
+          "historyWhen",
+          "loadAlarmHistory",
+          "saveAlarmHistory",
+          "updateAlarmHistory"
+        ]
+      },
+      {
+        "id": 718,
+        "file": "modules/0718-Alarms.js",
+        "exports": [
+          "Alarms"
+        ]
+      },
+      {
+        "id": 721,
+        "file": "modules/0721-useReminderNotifications.js",
+        "exports": [
+          "useReminderNotifications"
+        ]
+      },
+      {
+        "id": 722,
+        "file": "modules/0722-campaignText-useCampaignNotifications.js",
+        "exports": [
+          "campaignText",
+          "useCampaignNotifications"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "customer-club",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 461,
+        "file": "modules/0461-CLUB_PLAN_IDS-clubPlanOpen-CLUB_PLUS_MESSAGE-CLUB_DEFAULT-CLUB_LIMITS-cleanClubRule-pointsFor-pointsValue.js",
+        "exports": [
+          "CLUB_PLAN_IDS",
+          "clubPlanOpen",
+          "CLUB_PLUS_MESSAGE",
+          "CLUB_DEFAULT",
+          "CLUB_LIMITS",
+          "cleanClubRule",
+          "pointsFor",
+          "pointsValue",
+          "usablePoints",
+          "pointsKept",
+          "priceWithClub"
+        ]
+      },
+      {
+        "id": 462,
+        "file": "modules/0462-CLUB_REWARD_MAX-CLUB_REWARD_LIMITS-cleanClubReward-cleanClubRewards-rewardDiscount-rewardRefusal-rewardCh.js",
+        "exports": [
+          "CLUB_REWARD_MAX",
+          "CLUB_REWARD_LIMITS",
+          "cleanClubReward",
+          "cleanClubRewards",
+          "rewardDiscount",
+          "rewardRefusal",
+          "rewardChoices",
+          "bestReward",
+          "rewardsBodyValid"
+        ]
+      },
+      {
+        "id": 908,
+        "file": "modules/0908-ruleText-CustomerClub.js",
+        "exports": [
+          "ruleText",
+          "CustomerClub"
+        ]
+      },
+      {
+        "id": 909,
+        "file": "modules/0909-readClub-saveClub-clubIsOn-readClubMember-joinClub.js",
+        "exports": [
+          "readClub",
+          "saveClub",
+          "clubIsOn",
+          "readClubMember",
+          "joinClub"
+        ]
+      },
+      {
+        "id": 910,
+        "file": "modules/0910-ClubRewards-RewardSheet.js",
+        "exports": [
+          "ClubRewards",
+          "RewardSheet"
+        ]
+      },
+      {
+        "id": 911,
+        "file": "modules/0911-canAddClubMember-joinLine-ClubJoinSheet.js",
+        "exports": [
+          "canAddClubMember",
+          "joinLine",
+          "ClubJoinSheet"
+        ]
+      },
+      {
+        "id": 912,
+        "file": "modules/0912-canAddClubMember-joinLine.js",
+        "exports": [
+          "canAddClubMember",
+          "joinLine"
+        ]
+      },
+      {
+        "id": 913,
+        "file": "modules/0913-clubLock-useClubLocked-CLUB_LOCK_LINE-isClubLockError.js",
+        "exports": [
+          "clubLock",
+          "useClubLocked",
+          "CLUB_LOCK_LINE",
+          "isClubLockError"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "voice-and-parsing",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 549,
+        "file": "modules/0549-deviceVoiceEnabled-deviceVoiceReady-deviceModelReady-deviceVoiceNeedsUpdate-deviceModelBundled-deviceVoic.js",
+        "exports": [
+          "deviceVoiceEnabled",
+          "deviceVoiceReady",
+          "deviceModelReady",
+          "deviceVoiceNeedsUpdate",
+          "deviceModelBundled",
+          "deviceVoiceProgress",
+          "onDeviceVoiceProgress",
+          "prepareDeviceVoice",
+          "warmDeviceVoice",
+          "listenOnDevice"
+        ]
+      },
+      {
+        "id": 584,
+        "file": "modules/0584-VoiceAddHost.js",
+        "exports": [
+          "VoiceAddHost"
+        ]
+      },
+      {
+        "id": 586,
+        "file": "modules/0586-SPOKEN_NUMBER_WORDS-transcriptForDisplay.js",
+        "exports": [
+          "SPOKEN_NUMBER_WORDS",
+          "transcriptForDisplay"
+        ]
+      },
+      {
+        "id": 587,
+        "file": "modules/0587-useVoiceRecorder.js",
+        "exports": [
+          "useVoiceRecorder"
+        ]
+      },
+      {
+        "id": 588,
+        "file": "modules/0588-base64ToBytes-feedFromMedia-toPcm16k-voiceStartPlan-SERVER_TEXT_WAIT_MS-listenOnServer-serverVoiceAvailab.js",
+        "exports": [
+          "base64ToBytes",
+          "feedFromMedia",
+          "toPcm16k",
+          "voiceStartPlan",
+          "SERVER_TEXT_WAIT_MS",
+          "listenOnServer",
+          "serverVoiceAvailable",
+          "serverVoiceMissed"
+        ]
+      },
+      {
+        "id": 589,
+        "file": "modules/0589-SERVER_TEXT_WAIT_MS-base64ToBytes-toPcm16k-openServerStream-SERVER_MISSED_MS-serverVoiceCheck-voiceStartP.js",
+        "exports": [
+          "SERVER_TEXT_WAIT_MS",
+          "base64ToBytes",
+          "toPcm16k",
+          "openServerStream",
+          "SERVER_MISSED_MS",
+          "serverVoiceCheck",
+          "voiceStartPlan",
+          "feedFromMedia"
+        ]
+      },
+      {
+        "id": 591,
+        "file": "modules/0591-voiceReason.js",
+        "exports": [
+          "voiceReason"
+        ]
+      },
+      {
+        "id": 592,
+        "file": "modules/0592-checkVoice-aiMockActive-sendVoice-rereadVoice-MAX_REREAD_CHARS-apiRequest.js",
+        "exports": [
+          "checkVoice",
+          "aiMockActive",
+          "sendVoice",
+          "rereadVoice",
+          "MAX_REREAD_CHARS",
+          "apiRequest"
+        ]
+      },
+      {
+        "id": 593,
+        "file": "modules/0593-TOPIC_ORDER-TOPIC_WORDS-COUNT_WORDS-foldText-phraseHits-clauseTopics-classifyTopic-splitClauses.js",
+        "exports": [
+          "TOPIC_ORDER",
+          "TOPIC_WORDS",
+          "COUNT_WORDS",
+          "foldText",
+          "phraseHits",
+          "clauseTopics",
+          "classifyTopic",
+          "splitClauses",
+          "spokenWhen",
+          "readReminder",
+          "applyTopicRule"
+        ]
+      },
+      {
+        "id": 594,
+        "file": "modules/0594-debtWord-readAmount-spokenAmount-readSettle-readDebt-applyDebtRule.js",
+        "exports": [
+          "debtWord",
+          "readAmount",
+          "spokenAmount",
+          "readSettle",
+          "readDebt",
+          "applyDebtRule"
+        ]
+      },
+      {
+        "id": 596,
+        "file": "modules/0596-inProductUnit-itemsFromSaid-readVoiceAdd-pickerItems.js",
+        "exports": [
+          "inProductUnit",
+          "itemsFromSaid",
+          "readVoiceAdd",
+          "pickerItems"
+        ]
+      },
+      {
+        "id": 597,
+        "file": "modules/0597-parseShopNote-noteKey-sameStockLines.js",
+        "exports": [
+          "parseShopNote",
+          "noteKey",
+          "sameStockLines"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "api-sync-offline",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 415,
+        "file": "modules/0415-ApiError-messages-message-stockShortageMessage-recipeErrorMessage-samePersonMessage-describeError-reportE.js",
+        "exports": [
+          "ApiError",
+          "messages",
+          "message",
+          "stockShortageMessage",
+          "recipeErrorMessage",
+          "samePersonMessage",
+          "describeError",
+          "reportError",
+          "recentErrors",
+          "randomUUID",
+          "setInvalidator",
+          "onSubscriptionRequired",
+          "onAdminReauthRequired",
+          "onFreeLimit",
+          "onShopWrite",
+          "onUpgradeNeeded",
+          "onDeviceNotice",
+          "emitDeviceNotice",
+          "activeShop",
+          "activeUser",
+          "selectShop",
+          "selectUser",
+          "activeUserId",
+          "baseUrl",
+          "primaryBaseUrl",
+          "fetchApi",
+          "restoreToken",
+          "storeToken",
+          "authHeaders",
+          "request",
+          "shopPath",
+          "JOB_POLL_MS",
+          "job"
+        ]
+      },
+      {
+        "id": 427,
+        "file": "modules/0427-loadOfflineState-markOnline-markOffline-isOnline-setOfflineDays-isNetworkError-offlineLocked-useOfflineSt.js",
+        "exports": [
+          "loadOfflineState",
+          "markOnline",
+          "markOffline",
+          "isOnline",
+          "setOfflineDays",
+          "isNetworkError",
+          "offlineLocked",
+          "useOfflineStatus",
+          "saveSession",
+          "cachedSession",
+          "forgetOffline",
+          "registerOfflineShell"
+        ]
+      },
+      {
+        "id": 428,
+        "file": "modules/0428-readOffline-writeOffline-removeOffline-clearOffline.js",
+        "exports": [
+          "readOffline",
+          "writeOffline",
+          "removeOffline",
+          "clearOffline"
+        ]
+      },
+      {
+        "id": 445,
+        "file": "modules/0445-BACK_TO_PRIMARY_MS-RETRY_TIMEOUT_MS-transportFailed-isRead-apiBases.js",
+        "exports": [
+          "BACK_TO_PRIMARY_MS",
+          "RETRY_TIMEOUT_MS",
+          "transportFailed",
+          "isRead",
+          "apiBases"
+        ]
+      },
+      {
+        "id": 519,
+        "file": "modules/0519-defaultCards-OLD_DEFAULT_LAYOUTS-tutorialKey-businessKey-starterKey-rememberedBusiness-rememberBusiness-r.js",
+        "exports": [
+          "defaultCards",
+          "OLD_DEFAULT_LAYOUTS",
+          "tutorialKey",
+          "businessKey",
+          "starterKey",
+          "rememberedBusiness",
+          "rememberBusiness",
+          "readNotebookShop",
+          "patchNotebookBusiness",
+          "patchNotebookSettings",
+          "uniqueCards",
+          "postSale",
+          "cancelDocument",
+          "postReturn",
+          "postPurchase",
+          "postReceipt",
+          "listSales",
+          "listInvoices",
+          "issuedSales",
+          "markSaleIssued",
+          "listTopContacts",
+          "issueWalkInSale",
+          "setSaleBuyer",
+          "fillSalePrices",
+          "getSale",
+          "listPurchases",
+          "getPurchaseView",
+          "addPurchasePhoto",
+          "deletePurchasePhoto",
+          "setPurchaseSupplier",
+          "getPurchase",
+          "shareSale",
+          "getRecipe",
+          "putRecipe",
+          "getRecipes",
+          "getRecipeAlerts",
+          "markRecipeAlertSeen",
+          "createProduct",
+          "adjustPrices",
+          "readInventoryRevision",
+          "listMovements",
+          "idempotencyKey",
+          "listContacts",
+          "createContact",
+          "updateContact",
+          "archiveContact",
+          "listSameName",
+          "readContact",
+          "readCurrentAccount",
+          "setBookNote",
+          "readStatement",
+          "shareStatement",
+          "readLedgerSummary",
+          "listCheques",
+          "rememberCheque",
+          "transitionCheque",
+          "putChequePhoto",
+          "deleteChequePhoto",
+          "recordPayment",
+          "recordDebt",
+          "settleContact",
+          "reverseDebt",
+          "reversePayment",
+          "readSummary",
+          "readInsight",
+          "readActivity",
+          "saveActivityNote",
+          "putProductContent"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "excel-and-barcode",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 661,
+        "file": "modules/0661-pickWorkbook-saveWorkbook-pickJson-saveJson-namedCacheCopy-savePngDataUrl-shareText-sharePngIfPossible.js",
+        "exports": [
+          "pickWorkbook",
+          "saveWorkbook",
+          "pickJson",
+          "saveJson",
+          "namedCacheCopy",
+          "savePngDataUrl",
+          "shareText",
+          "sharePngIfPossible",
+          "sharePngDataUrl"
+        ]
+      },
+      {
+        "id": 994,
+        "file": "modules/0994-TOMAN_PRICE_TITLES-importQuantity-exportWorkbook-tableWorkbook-importWorkbook.js",
+        "exports": [
+          "TOMAN_PRICE_TITLES",
+          "importQuantity",
+          "exportWorkbook",
+          "tableWorkbook",
+          "importWorkbook"
+        ]
+      },
+      {
+        "id": 999,
+        "file": "modules/0999-DecodeHintType-BarcodeReader.js",
+        "exports": [
+          "DecodeHintType",
+          "BarcodeReader"
+        ]
+      },
+      {
+        "id": 1000,
+        "file": "modules/1000-version-parse_xlscfb-parse_zip-read-readFile-readFileSync-write-writeFile.js",
+        "exports": [
+          "default",
+          "version",
+          "parse_xlscfb",
+          "parse_zip",
+          "read",
+          "readFile",
+          "readFileSync",
+          "write",
+          "writeFile",
+          "writeFileSync",
+          "writeFileAsync",
+          "writeXLSX",
+          "writeFileXLSX",
+          "utils",
+          "set_fs",
+          "set_cptable",
+          "stream",
+          "SSF",
+          "CFB",
+          "!data",
+          "!ref",
+          "Type",
+          "Target",
+          "Id",
+          "TargetMode",
+          "parts",
+          "l",
+          "body",
+          "Name",
+          "ID",
+          "Rel",
+          "Tooltip",
+          "!rows",
+          "!rel",
+          "!drawel",
+          "Comment",
+          "Sheet",
+          "Hidden",
+          "Ref",
+          "Count",
+          "Unique",
+          "Props",
+          "bookType",
+          "ss:Width",
+          "ss:Hidden"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "demo-data",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 448,
+        "file": "modules/0448-DEMO_SHOP_ID-demoActive-demoSession-startDemo-stopDemo-onDemoChange-setDemoHandlers-demoStartOwn.js",
+        "exports": [
+          "DEMO_SHOP_ID",
+          "demoActive",
+          "demoSession",
+          "startDemo",
+          "stopDemo",
+          "onDemoChange",
+          "setDemoHandlers",
+          "demoStartOwn",
+          "demoLeave",
+          "isDemoKey",
+          "demoUserId"
+        ]
+      },
+      {
+        "id": 449,
+        "file": "modules/0449-DEMO_ONLY-freePlanPreview-noAlarmPreview-resetDemo-clearDemo-demoShopName-demoSnapshot-demoRequest.js",
+        "exports": [
+          "DEMO_ONLY",
+          "freePlanPreview",
+          "noAlarmPreview",
+          "resetDemo",
+          "clearDemo",
+          "demoShopName",
+          "demoSnapshot",
+          "demoRequest"
+        ]
+      },
+      {
+        "id": 450,
+        "file": "modules/0450-plansPreview-previewBilling-previewQuote-previewDowngrade.js",
+        "exports": [
+          "plansPreview",
+          "previewBilling",
+          "previewQuote",
+          "previewDowngrade"
+        ]
+      },
+      {
+        "id": 467,
+        "file": "modules/0467-sets-demoKind-freshDemoInventory.js",
+        "exports": [
+          "sets",
+          "demoKind",
+          "freshDemoInventory"
+        ]
+      },
+      {
+        "id": 468,
+        "file": "modules/0468-resetDemoExpenses-demoStaffExpense-demoDropExpense-demoExpensesRoute.js",
+        "exports": [
+          "resetDemoExpenses",
+          "demoStaffExpense",
+          "demoDropExpense",
+          "demoExpensesRoute"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "authentication",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 379,
+        "file": "modules/0379-PrimaryKey-OutlineKey-TextKey-DEMO_KEY_LABEL-AccountGate.js",
+        "exports": [
+          "PrimaryKey",
+          "OutlineKey",
+          "TextKey",
+          "DEMO_KEY_LABEL",
+          "AccountGate"
+        ]
+      },
+      {
+        "id": 511,
+        "file": "modules/0511-latinDigits-extractCode-nationalMobile-typeIntoBoxes.js",
+        "exports": [
+          "latinDigits",
+          "extractCode",
+          "nationalMobile",
+          "typeIntoBoxes"
+        ]
+      },
+      {
+        "id": 512,
+        "file": "modules/0512-nationalMobile-otpCall-otpDetail-latinDigits-persianDigits-isMobile-toE164-countdown.js",
+        "exports": [
+          "nationalMobile",
+          "otpCall",
+          "otpDetail",
+          "latinDigits",
+          "persianDigits",
+          "isMobile",
+          "toE164",
+          "countdown",
+          "maskEmail",
+          "maskPhone",
+          "requestVoiceCall"
+        ]
+      },
+      {
+        "id": 513,
+        "file": "modules/0513-GoogleButton.js",
+        "exports": [
+          "GoogleButton"
+        ]
+      },
+      {
+        "id": 514,
+        "file": "modules/0514-GmailLinkCardView-gmailHidden-GmailLinkCard-LinkGmailSuggestCard-LinkGmailSuggest-GooglePendingCard.js",
+        "exports": [
+          "GmailLinkCardView",
+          "gmailHidden",
+          "GmailLinkCard",
+          "LinkGmailSuggestCard",
+          "LinkGmailSuggest",
+          "GooglePendingCard"
+        ]
+      },
+      {
+        "id": 538,
+        "file": "modules/0538-PhoneCompleteCardView-PhoneStepView-CodeStepView-PhoneTakenView-moveConfirm-PhoneCompleteFlow-forgetIdent.js",
+        "exports": [
+          "PhoneCompleteCardView",
+          "PhoneStepView",
+          "CodeStepView",
+          "PhoneTakenView",
+          "moveConfirm",
+          "PhoneCompleteFlow",
+          "forgetIdentities",
+          "PhoneCompleteCard",
+          "PhoneSuggestIntroView",
+          "PhoneCompleteSuggest",
+          "shownPhone"
+        ]
+      },
+      {
+        "id": 543,
+        "file": "modules/0543-onAppRestart-restartApp-DeviceLimitCard-DeviceLimitSheet-ReplacedDevicePopup.js",
+        "exports": [
+          "onAppRestart",
+          "restartApp",
+          "DeviceLimitCard",
+          "DeviceLimitSheet",
+          "ReplacedDevicePopup"
+        ]
+      },
+      {
+        "id": 544,
+        "file": "modules/0544-isolateName-kindLabel-relativeTime-deviceLimitView-devicesRuleText-replacedView-sessionEndedText.js",
+        "exports": [
+          "isolateName",
+          "kindLabel",
+          "relativeTime",
+          "deviceLimitView",
+          "devicesRuleText",
+          "replacedView",
+          "sessionEndedText"
+        ]
+      }
+    ]
+  },
+  {
+    "feature": "subscriptions",
+    "evidence": "Module exports and code inspection. Groups added for navigation; not original source paths.",
+    "modules": [
+      {
+        "id": 560,
+        "file": "modules/0560-payloadShop-recoverBazaarPurchases-bazaarLaunchQuote-bazaarOfferQuote-bazaarCreditQuote-bazaarDiscountQuo.js",
+        "exports": [
+          "payloadShop",
+          "recoverBazaarPurchases",
+          "bazaarLaunchQuote",
+          "bazaarOfferQuote",
+          "bazaarCreditQuote",
+          "bazaarDiscountQuote",
+          "bazaarDynamicQuote",
+          "bazaarRetryText",
+          "buyWithBazaar"
+        ]
+      },
+      {
+        "id": 561,
+        "file": "modules/0561-ORDER-BAZAAR_ORDER-currentPlan-upgradeOptions-planLadder-periodPick-savingsPercent-perMonth.js",
+        "exports": [
+          "ORDER",
+          "BAZAAR_ORDER",
+          "currentPlan",
+          "upgradeOptions",
+          "planLadder",
+          "periodPick",
+          "savingsPercent",
+          "perMonth",
+          "roundedPerMonth",
+          "cardsForPeriod",
+          "periodChoices",
+          "defaultChoice",
+          "planHighlights"
+        ]
+      },
+      {
+        "id": 723,
+        "file": "modules/0723-openSubscriptionPage-openSupportPage-openAccountPage-openPasswordPage-openReferralPage-FeatureTipsSetting.js",
+        "exports": [
+          "openSubscriptionPage",
+          "openSupportPage",
+          "openAccountPage",
+          "openPasswordPage",
+          "openReferralPage",
+          "FeatureTipsSetting",
+          "planPill",
+          "ProfilePanel"
+        ]
+      },
+      {
+        "id": 724,
+        "file": "modules/0724-SubscriptionPanel.js",
+        "exports": [
+          "SubscriptionPanel"
+        ]
+      }
+    ]
+  }
+]

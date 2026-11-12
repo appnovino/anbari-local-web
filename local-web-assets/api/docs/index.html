@@ -1,0 +1,163 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Anbari API</title><style>
+:root{color-scheme:light dark;--bg:#fff;--fg:#1b1b1b;--muted:#666;--line:#e3e3e3;--code:#f5f5f2;--accent:#b8860b}
+@media (prefers-color-scheme:dark){:root{--bg:#121212;--fg:#ececec;--muted:#a0a0a0;--line:#2c2c2c;--code:#1e1e1e;--accent:#f0c040}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{line-height:1.25}h2{margin-top:2.2em;padding-top:.6em;border-top:1px solid var(--line)}a{color:var(--accent)}code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);padding:12px 14px;border-radius:10px;overflow-x:auto}pre code{padding:0;background:none}table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+</style></head><body><main><h1 id="myanbari-api-v1">myAnbari API (v1)</h1>
+<p>A guide for the developer of a shop&#39;s own website or app. With this API your website can:</p>
+<ul><li>show what is in stock and what is sold out,</li><li>add new products and edit them,</li><li>record sales (online orders) and incoming stock,</li><li>read recent sales and stock changes, each with where it came from.</li></ul>
+<p>Every sale or stock change your website sends shows up in the shop&#39;s app with a small «سایت» (website) label, so the shop always knows which sales came from the website, which were typed by hand, by an employee, by voice, by barcode scan, or by ChatGPT / Claude.</p>
+<p><strong>Plan:</strong> the API is part of the «پلاس» (Plus) plan only. On the free plan and on «استاندارد» (Standard) every request answers <code>402 api_plus_only</code> (see Errors). Keys are never deleted by this: when the shop moves to Plus, the same keys work again.</p>
+<ul><li>For ChatGPT, Claude or another MCP app, use the AI connector instead (no code needed): see <code>docs/MCP.md</code>.</li><li>Base URL: <code>https://&lt;your-anbari-address&gt;/api/v1</code> (the same address you open Anbari with).</li><li>Human-readable copy of this page: <code>/api/docs</code>. Plain Markdown: <code>/api/docs.md</code>.</li><li>Everything is JSON (UTF-8) unless a file is requested.</li></ul>
+<h2 id="getting-a-key">Getting a key</h2>
+<p>In the app: <strong>Data → Connections → API keys</strong> («اتصال به اپ‌های دیگر»). Only the shop owner can make keys, and only on the Plus plan; on other plans the screen shows an upgrade card instead.</p>
+<ul><li>Give the key a name (for example &quot;menu website&quot;) and choose what it may do (scopes, below).</li><li>The key is shown <strong>once</strong>. Copy it then. Anbari stores only a fingerprint of it, so a lost key cannot be shown again; make a new one.</li><li>Keys expire after 30, 90, 180 or 365 days (your choice, 90 by default). Revoke a key any time; it stops working at once.</li><li>Each request is recorded against the key (last used time, and an audit entry for every change).</li></ul>
+<h2 id="sending-the-key">Sending the key</h2>
+<p>Send the key in a header on every request:</p>
+<pre><code>Authorization: Bearer &lt;key&gt;</code></pre>
+<p>or</p>
+<pre><code>X-Api-Key: &lt;key&gt;</code></pre>
+<p>Never put a key in a URL, and keep keys on your server. A key that can sell, receive, change prices or import must never be placed in web page code: browsers are refused for those requests. Read-only requests (<code>GET</code>) are allowed from any website (CORS <code>*</code>, no cookies), but anyone who can see a key in page code can read your stock with it, so prefer calling from your server even for reading.</p>
+<h2 id="scopes">Scopes</h2>
+<table><thead><tr><th>Scope</th><th>Allows</th></tr></thead><tbody><tr><td><code>inventory:read</code></td><td>Read products, stock, availability, selling prices, categories and photos; download CSV/Excel.</td></tr><tr><td><code>inventory:sell</code></td><td>Record sales (<code>POST /sales</code>).</td></tr><tr><td><code>inventory:receive</code></td><td>Record incoming stock (<code>POST /receipts</code>).</td></tr><tr><td><code>prices</code></td><td>Change selling and purchase prices; also shows purchase costs (<code>costPrice</code>, <code>avgCost</code>) in product data.</td></tr><tr><td><code>import</code></td><td>Send a stock-count file (Excel, CSV or JSON rows) that sets each product&#39;s stock to the counted amount.</td></tr><tr><td><code>catalog</code></td><td>Create and edit products (<code>POST /products</code>, <code>PATCH /products/{id}</code>). Setting a purchase price (<code>costPrice</code>) also needs <code>prices</code>.</td></tr></tbody></table>
+<p>For a normal shop website: <code>inventory:read</code> + <code>inventory:sell</code> (+ <code>catalog</code> if the website adds products).</p>
+<p>A request without the needed scope gets <code>403 insufficient_scope</code> with the missing scope in <code>required</code>.</p>
+<h2 id="endpoints">Endpoints</h2>
+<table><thead><tr><th>Method and path</th><th>Scope</th><th>What it does</th></tr></thead><tbody><tr><td><code>GET /me</code></td><td>any</td><td>Test the connection: shop name, key name, scopes, expiry and rate limit.</td></tr><tr><td><code>GET /products</code></td><td><code>inventory:read</code></td><td>Products with stock and availability (paged). Same answer as the older name <code>GET /inventory</code>.</td></tr><tr><td><code>GET /inventory</code></td><td><code>inventory:read</code></td><td>The older name of <code>GET /products</code> (kept working).</td></tr><tr><td><code>GET /products/lookup</code></td><td><code>inventory:read</code></td><td>One product by <code>barcode</code>, <code>sku</code> or exact <code>name</code>.</td></tr><tr><td><code>GET /stock</code></td><td><code>inventory:read</code></td><td>Stock levels: counts (available, sold out, low) and each product&#39;s status.</td></tr><tr><td><code>GET /changes?since=</code></td><td><code>inventory:read</code></td><td>Only the products that changed since a <code>revision</code> (for a website that keeps its own copy).</td></tr><tr><td><code>GET /movements</code></td><td><code>inventory:read</code></td><td>Recent stock changes (newest first), each with its <code>origin</code>.</td></tr><tr><td><code>GET /sales</code></td><td><code>inventory:read</code></td><td>Recent sales with their lines, each with its <code>origin</code>.</td></tr><tr><td><code>GET /inventory.csv</code></td><td><code>inventory:read</code></td><td>All active products as CSV (UTF-8 with BOM, opens in Excel).</td></tr><tr><td><code>GET /inventory.xlsx</code></td><td><code>inventory:read</code></td><td>All active products in the app&#39;s own Excel layout (can be edited and sent back to <code>/import</code>).</td></tr><tr><td><code>GET /categories</code></td><td><code>inventory:read</code></td><td>Category names.</td></tr><tr><td><code>GET /products/{id}</code></td><td><code>inventory:read</code></td><td>One product.</td></tr><tr><td><code>GET /products/{id}/photo</code></td><td><code>inventory:read</code></td><td>The product photo (JPEG/PNG/WebP).</td></tr><tr><td><code>POST /sales</code></td><td><code>inventory:sell</code></td><td>Record one sale (a receipt). Needs <code>Idempotency-Key</code>.</td></tr><tr><td><code>POST /receipts</code></td><td><code>inventory:receive</code></td><td>Record incoming stock. Needs <code>Idempotency-Key</code>.</td></tr><tr><td><code>POST /products</code></td><td><code>catalog</code></td><td>Create a product. Needs <code>Idempotency-Key</code>.</td></tr><tr><td><code>PATCH /products/{id}</code></td><td><code>catalog</code></td><td>Edit a product: only the fields you send change.</td></tr><tr><td><code>PATCH /products/{id}/price</code></td><td><code>prices</code></td><td>Change <code>price</code> (selling) and/or <code>costPrice</code> (purchase).</td></tr><tr><td><code>POST /import</code></td><td><code>import</code></td><td>Stock-count file. <code>?dryRun=true</code> shows the changes without saving. Needs <code>Idempotency-Key</code> (not for dry runs).</td></tr></tbody></table>
+<h3 id="get-products-also-get-inventory">GET /products (also GET /inventory)</h3>
+<p>Query options: <code>q</code> (search in name, brand or exact barcode), <code>category</code>, <code>available=true|false</code>, <code>limit</code> (1–500, default 100), <code>cursor</code> (the <code>nextCursor</code> of the previous page).</p>
+<pre><code>{
+  &quot;products&quot;: [
+    {
+      &quot;id&quot;: &quot;3f1c…&quot;, &quot;name&quot;: &quot;Milk&quot;, &quot;brand&quot;: null, &quot;category&quot;: &quot;Dairy&quot;, &quot;unit&quot;: &quot;l&quot;, &quot;kind&quot;: &quot;simple&quot;,
+      &quot;barcode&quot;: &quot;626…&quot;, &quot;size&quot;: null, &quot;color&quot;: null, &quot;description&quot;: &quot;&quot;,
+      &quot;stock&quot;: 7, &quot;available&quot;: true, &quot;price&quot;: 30000,
+      &quot;photo&quot;: &quot;/api/v1/products/3f1c…/photo&quot;, &quot;version&quot;: 4, &quot;updatedAt&quot;: &quot;2026-09-27T08:10:00.000Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;9a0d…&quot;, &quot;name&quot;: &quot;Latte&quot;, &quot;kind&quot;: &quot;made&quot;, &quot;unit&quot;: &quot;piece&quot;,
+      &quot;stock&quot;: 28, &quot;available&quot;: true, &quot;price&quot;: 90000, &quot;…&quot;: &quot;…&quot;
+    }
+  ],
+  &quot;nextCursor&quot;: null,
+  &quot;revision&quot;: 42
+}</code></pre>
+<ul><li><code>stock</code> for a normal product is the amount on hand. For a <strong>made product</strong> (it has a recipe) it is how many can be made from the ingredients on hand; <code>null</code> means no recipe, so it is always available.</li><li><code>available</code> is <code>true</code> when <code>stock</code> is above zero (or <code>null</code>). A menu should hide or grey out items with <code>available: false</code>.</li><li><code>price</code> is the selling price (toman) or <code>null</code>. <code>costPrice</code> and <code>avgCost</code> appear only for keys with the <code>prices</code> scope.</li><li><code>revision</code> goes up whenever anything in the shop changes. Keep the last one and ask <code>GET /changes?since=&lt;revision&gt;</code> for only what changed.</li></ul>
+<h3 id="get-products-lookup">GET /products/lookup</h3>
+<p>Find one product by its code or name. Send exactly one of <code>barcode</code>, <code>sku</code> or <code>name</code> (exact name).</p>
+<pre><code>GET /api/v1/products/lookup?sku=CK-1</code></pre>
+<p>Answer: <code>{&quot;product&quot;: {...}}</code>. Several products with the same code: the newest is returned and <code>moreWithSameCode: true</code> is added. No match: <code>404 product_not_found</code>.</p>
+<p><code>sku</code> and <code>barcode</code> are the same field in the app (the product&#39;s code). A website can store its own SKU there.</p>
+<h3 id="get-stock">GET /stock</h3>
+<p>Query options: <code>status=all|available|out|low</code> (default <code>all</code>), <code>limit</code> (1–500, default 100), <code>cursor</code>.</p>
+<pre><code>{
+  &quot;summary&quot;: {&quot;products&quot;: 120, &quot;available&quot;: 104, &quot;outOfStock&quot;: 16, &quot;low&quot;: 7},
+  &quot;products&quot;: [
+    {&quot;id&quot;: &quot;3f1c…&quot;, &quot;name&quot;: &quot;Milk&quot;, &quot;unit&quot;: &quot;l&quot;, &quot;kind&quot;: &quot;simple&quot;, &quot;barcode&quot;: &quot;626…&quot;, &quot;stock&quot;: 3, &quot;available&quot;: true,
+     &quot;status&quot;: &quot;low&quot;, &quot;lowLevel&quot;: 5, &quot;price&quot;: 30000, &quot;updatedAt&quot;: &quot;2026-11-09T08:10:00.000Z&quot;}
+  ],
+  &quot;nextCursor&quot;: null,
+  &quot;revision&quot;: 42
+}</code></pre>
+<p><code>status</code> is <code>available</code>, <code>low</code> (the shop&#39;s own «رو به اتمام» alarm says it is running out; <code>lowLevel</code> is that alarm&#39;s amount) or <code>out</code> (sold out).</p>
+<h3 id="get-changes">GET /changes</h3>
+<p>For a website that keeps its own copy of the products. Send the <code>revision</code> you saw last: <code>GET /changes?since=42</code>.</p>
+<pre><code>{&quot;revision&quot;: 45, &quot;fullResyncRequired&quot;: false, &quot;products&quot;: [{&quot;id&quot;: &quot;3f1c…&quot;, &quot;…&quot;: &quot;…&quot;}, {&quot;id&quot;: &quot;9a0d…&quot;, &quot;removed&quot;: true}], &quot;nextCursor&quot;: null}</code></pre>
+<ul><li><code>products</code> are the full, current products that changed. A removed product comes as <code>{&quot;id&quot;, &quot;removed&quot;: true}</code>.</li><li>Save the new <code>revision</code> and use it next time. Nothing changed: <code>products</code> is empty.</li><li><code>fullResyncRequired: true</code>: the change log is too old; read <code>GET /products</code> again and start from its <code>revision</code>.</li><li>More than <code>limit</code> (default 200) changed: call again with <code>cursor=&lt;nextCursor&gt;</code>.</li></ul>
+<h3 id="get-movements">GET /movements</h3>
+<p>Recent stock changes, newest first. Options: <code>kind=received|sold|used|waste</code>, <code>productId</code>, <code>since</code> (only newer than this time), <code>limit</code> (1–200, default 50). Next page: <code>before</code> and <code>beforeId</code> from <code>next</code>.</p>
+<pre><code>{
+  &quot;movements&quot;: [
+    {&quot;id&quot;: &quot;…&quot;, &quot;productId&quot;: &quot;3f1c…&quot;, &quot;name&quot;: &quot;Milk&quot;, &quot;kind&quot;: &quot;sold&quot;, &quot;correction&quot;: false, &quot;quantity&quot;: 1, &quot;unit&quot;: &quot;l&quot;,
+     &quot;stockBefore&quot;: 8, &quot;stockAfter&quot;: 7, &quot;occurredAt&quot;: &quot;…&quot;, &quot;recordedAt&quot;: &quot;…&quot;, &quot;saleId&quot;: &quot;…&quot;, &quot;unitPrice&quot;: 30000,
+     &quot;origin&quot;: {&quot;channel&quot;: &quot;website&quot;, &quot;method&quot;: &quot;api&quot;, &quot;by&quot;: null, &quot;apiKey&quot;: {&quot;id&quot;: &quot;…&quot;, &quot;name&quot;: &quot;shop website&quot;}}}
+  ],
+  &quot;next&quot;: {&quot;before&quot;: &quot;2026-11-09T08:00:00.000Z&quot;, &quot;beforeId&quot;: &quot;…&quot;}
+}</code></pre>
+<h3 id="get-sales">GET /sales</h3>
+<p>Recent sales (receipts), newest first, with their lines. Options: <code>since</code>, <code>limit</code> (1–100, default 20), and <code>before</code> + <code>beforeId</code> from <code>next</code> for the next page.</p>
+<pre><code>{&quot;sales&quot;: [{&quot;id&quot;: &quot;…&quot;, &quot;receiptNo&quot;: 128, &quot;paymentMethod&quot;: &quot;card&quot;, &quot;totalToman&quot;: 60000, &quot;occurredAt&quot;: &quot;…&quot;, &quot;note&quot;: &quot;Order 1042&quot;,
+  &quot;cancelled&quot;: false, &quot;lines&quot;: [{&quot;productId&quot;: &quot;3f1c…&quot;, &quot;name&quot;: &quot;Milk&quot;, &quot;unit&quot;: &quot;l&quot;, &quot;quantity&quot;: 2, &quot;unitPrice&quot;: 30000, &quot;total&quot;: 60000}],
+  &quot;origin&quot;: {&quot;channel&quot;: &quot;website&quot;, &quot;method&quot;: null, &quot;by&quot;: null, &quot;apiKey&quot;: {&quot;id&quot;: &quot;…&quot;, &quot;name&quot;: &quot;shop website&quot;}}}], &quot;next&quot;: null}</code></pre>
+<h3 id="where-an-entry-came-from-origin">Where an entry came from (origin)</h3>
+<p>Every movement and sale says where it came from:</p>
+<table><thead><tr><th><code>origin.channel</code></th><th>Meaning</th></tr></thead><tbody><tr><td><code>website</code></td><td>Sent through this API with a key (<code>apiKey</code> names the key).</td></tr><tr><td><code>connector</code></td><td>Sent by ChatGPT or Claude through the AI connector.</td></tr><tr><td><code>staff</code></td><td>Typed in the app by an employee (<code>by</code> is the name).</td></tr><tr><td><code>app</code></td><td>Typed in the app by the shop owner.</td></tr></tbody></table>
+<p><code>origin.method</code> is how it was typed: <code>manual</code> (by hand), <code>voice</code>, <code>scan</code> (barcode), <code>image</code> (photo), <code>batch</code>, <code>pdf</code>, <code>excel</code> / <code>csv</code> / <code>json</code> (a file), <code>api</code>, <code>production</code> (a recipe), <code>correction</code>.</p>
+<h3 id="post-products">POST /products</h3>
+<p>Create a product. Needs the <code>catalog</code> scope and an <code>Idempotency-Key</code>.</p>
+<pre><code>{&quot;name&quot;: &quot;Chocolate cake&quot;, &quot;sku&quot;: &quot;CK-1&quot;, &quot;category&quot;: &quot;Cakes&quot;, &quot;brand&quot;: &quot;Home&quot;, &quot;unit&quot;: &quot;piece&quot;, &quot;price&quot;: 50000, &quot;description&quot;: &quot;Small&quot;}</code></pre>
+<ul><li>Only <code>name</code> is required. Also allowed: <code>barcode</code> (or <code>sku</code>, the same field), <code>category</code>, <code>brand</code>, <code>size</code>, <code>color</code>, <code>unit</code> (<code>piece</code>, <code>kg</code>, <code>g</code>, <code>l</code>, <code>ml</code>, <code>m</code> …), <code>price</code>, <code>costPrice</code> (needs <code>prices</code> too), <code>description</code>, and your own <code>id</code> (a UUID).</li><li>A product with the same name already exists: <code>409 product_exists</code> with its <code>productId</code>. Use <code>PATCH</code> for it instead.</li><li>Stock is never set here. New stock comes with <code>POST /receipts</code> (goods arrived) or <code>POST /import</code> (a count).</li><li>Answer <code>201</code>: <code>{&quot;product&quot;: {...}}</code>.</li></ul>
+<h3 id="patch-products-id">PATCH /products/{id}</h3>
+<p>Edit a product. Only the fields you send change; <code>null</code> clears an optional field (for example <code>&quot;brand&quot;: null</code>). Same fields as <code>POST /products</code>. Optional <code>version</code>: the edit is refused with <code>409 version_conflict</code> if the product changed since you read it.</p>
+<pre><code>{&quot;price&quot;: 55000, &quot;category&quot;: &quot;Cakes&quot;, &quot;version&quot;: 3}</code></pre>
+<p>Answer <code>200</code>: <code>{&quot;product&quot;: {...}}</code>. The unit of a product that already has stock or history cannot change (<code>409 unit_change_blocked</code>).</p>
+<h3 id="post-sales">POST /sales</h3>
+<p>Records a sale exactly like the app&#39;s basket: it gets a receipt number, stock goes down, made products use up their recipe ingredients, and it counts in sales and profit reports. Stock never goes below zero: if a line asks for more than is on hand the whole sale is refused with <code>409 insufficient_stock</code> (details: <code>productId</code>, <code>name</code>, <code>stock</code>, <code>unit</code>) and nothing changes.</p>
+<pre><code>{
+  &quot;lines&quot;: [
+    {&quot;productId&quot;: &quot;3f1c…&quot;, &quot;quantity&quot;: 2},
+    {&quot;barcode&quot;: &quot;6260000000017&quot;, &quot;quantity&quot;: 1, &quot;unitPrice&quot;: 28000},
+    {&quot;name&quot;: &quot;Latte&quot;, &quot;quantity&quot;: 1}
+  ],
+  &quot;paymentMethod&quot;: &quot;card&quot;,
+  &quot;note&quot;: &quot;Online order 1042&quot;,
+  &quot;occurredAt&quot;: &quot;2026-09-27T10:15:00+03:30&quot;
+}</code></pre>
+<ul><li>Each line names a product by <code>productId</code>, <code>barcode</code> or exact <code>name</code>. An unknown product is <code>404 product_not_found</code> (<code>line</code> = its position). A name that fits several brands is <code>409 product_choice_required</code> with <code>candidates</code>.</li><li><code>quantity</code> may have up to 3 decimals. <code>unit</code> (optional) converts, for example <code>&quot;g&quot;</code> for a product kept in <code>kg</code>.</li><li><code>unitPrice</code> is optional; without it the product&#39;s selling price is used.</li><li><code>paymentMethod</code>: <code>cash</code> or <code>card</code> (default <code>card</code>). Credit/customer accounts are not available through the API.</li><li>Answer <code>201</code>: <code>{ &quot;sale&quot;: {id, receiptNo, totalToman, lines: [...]}, &quot;products&quot;: [...updated products], &quot;revision&quot;: … }</code>.</li></ul>
+<h3 id="post-receipts">POST /receipts</h3>
+<p>Records incoming stock like the app&#39;s &quot;received&quot; entry. A new <code>name</code> creates the product.</p>
+<pre><code>{&quot;lines&quot;: [{&quot;productId&quot;: &quot;3f1c…&quot;, &quot;quantity&quot;: 12, &quot;unitCost&quot;: 21000, &quot;expiresAt&quot;: &quot;2026-12-01&quot;}, {&quot;name&quot;: &quot;Bread&quot;, &quot;quantity&quot;: 20, &quot;unit&quot;: &quot;piece&quot;}]}</code></pre>
+<p><code>unitCost</code> (optional) updates the average purchase cost. Answer <code>201</code>: <code>{ &quot;movements&quot;: [...], &quot;products&quot;: [...], &quot;revision&quot;: … }</code>.</p>
+<h3 id="patch-products-id-price">PATCH /products/{id}/price</h3>
+<pre><code>{&quot;price&quot;: 32000, &quot;costPrice&quot;: 23000, &quot;version&quot;: 4}</code></pre>
+<p>Send <code>price</code>, <code>costPrice</code> or both (<code>null</code> clears one). <code>version</code> is optional: when sent, the change is refused with <code>409 version_conflict</code> if the product changed since you read it.</p>
+<h3 id="post-import">POST /import</h3>
+<p>Sets each listed product&#39;s stock to the counted amount. The difference is saved as a stock reconciliation (it is never counted as sales revenue), and the other columns update the product. Up to 500 rows per request; products not in the file are left alone.</p>
+<p>Send one of:</p>
+<ul><li>JSON: <code>{&quot;rows&quot;: [{&quot;name&quot;: &quot;Milk&quot;, &quot;stock&quot;: 12, &quot;barcode&quot;: &quot;626…&quot;, &quot;category&quot;: &quot;Dairy&quot;, &quot;brand&quot;: &quot;…&quot;, &quot;price&quot;: 30000, &quot;costPrice&quot;: 22000, &quot;unit&quot;: &quot;l&quot;}]}</code></li><li>CSV with <code>Content-Type: text/csv</code> (first row: <code>نام کالا,موجودی</code> and optionally <code>بارکد,توضیحات,دسته‌بندی,برند,سایز,رنگ,قیمت,قیمت خرید</code>)</li><li>Excel with <code>Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</code> (the app&#39;s own export, or <code>GET /inventory.xlsx</code>)</li></ul>
+<p>With <code>?dryRun=true</code> the answer lists each row&#39;s <code>currentStock</code>, the <code>change</code> and whether it <code>isNew</code>, and nothing is saved. Formulas in files are refused (<code>import_formula</code>).</p>
+<h2 id="safe-retries-idempotency-key">Safe retries (Idempotency-Key)</h2>
+<p><code>POST /sales</code>, <code>POST /receipts</code>, <code>POST /products</code> and <code>POST /import</code> need an <code>Idempotency-Key</code> header: any unique text of 8–100 letters, digits, <code>-</code>, <code>_</code>, <code>.</code> or <code>:</code> (a UUID is ideal). Use a new key for each new sale, and the <strong>same</strong> key when you retry the same sale after a timeout. A repeat returns the first answer (header <code>Idempotent-Replayed: true</code>) and changes nothing; the same key with a different body is <code>409 idempotency_conflict</code>. <code>PATCH</code> accepts the header too.</p>
+<h2 id="limits">Limits</h2>
+<ul><li>120 requests per minute per key, and 600 per minute per internet address. Over the limit: <code>429 rate_limited</code> with a <code>Retry-After</code> header (seconds). Every answer carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code>.</li><li>Request body up to 1 MB (6 MB for <code>/import</code>). Up to 60 lines per sale or receipt.</li></ul>
+<h2 id="errors">Errors</h2>
+<p>Errors look like <code>{&quot;error&quot;: {&quot;code&quot;: &quot;…&quot;, &quot;requestId&quot;: &quot;…&quot;}}</code> plus details for some codes.</p>
+<table><thead><tr><th>Status</th><th>Code</th><th>Meaning</th></tr></thead><tbody><tr><td>400</td><td><code>invalid_request</code>, <code>idempotency_key_required</code>, <code>invalid_idempotency_key</code>, <code>invalid_unit</code>, <code>import_invalid</code>, <code>import_limit</code>, <code>import_formula</code></td><td>The request is not valid.</td></tr><tr><td>401</td><td><code>api_key_missing</code>, <code>api_key_invalid</code>, <code>api_key_revoked</code>, <code>api_key_expired</code></td><td>No usable key.</td></tr><tr><td>402</td><td><code>api_plus_only</code></td><td>The shop is not on the «پلاس» (Plus) plan (free, Standard, or Plus ended). Details: <code>plan: &quot;pro&quot;</code>, <code>upgrade: true</code>. The key is kept and works again once the shop is on Plus.</td></tr><tr><td>403</td><td><code>insufficient_scope</code></td><td>The key does not have the needed scope (<code>required</code>).</td></tr><tr><td>403</td><td><code>origin_forbidden</code></td><td>A write was sent from a web page; send it from your server.</td></tr><tr><td>404</td><td><code>not_found</code>, <code>product_not_found</code></td><td>No such product (or path).</td></tr><tr><td>409</td><td><code>insufficient_stock</code>, <code>product_choice_required</code>, <code>product_exists</code>, <code>name_taken</code>, <code>idempotency_conflict</code>, <code>version_conflict</code>, <code>unit_change_blocked</code>, <code>name_ambiguous</code>, <code>barcode_conflict</code></td><td>The change conflicts with the current stock or data.</td></tr><tr><td>410</td><td><code>shop_archived</code></td><td>The shop was closed.</td></tr><tr><td>415</td><td><code>unsupported_media_type</code></td><td><code>/import</code> got a file type it does not read.</td></tr><tr><td>429</td><td><code>rate_limited</code></td><td>Too many requests; wait <code>Retry-After</code> seconds.</td></tr></tbody></table>
+<h2 id="examples">Examples</h2>
+<p>Read stock:</p>
+<pre><code>curl -H &quot;Authorization: Bearer $ANBARI_KEY&quot; &quot;https://&lt;your-anbari-address&gt;/api/v1/inventory?available=true&quot;</code></pre>
+<p>What is sold out:</p>
+<pre><code>curl -H &quot;Authorization: Bearer $ANBARI_KEY&quot; &quot;https://&lt;your-anbari-address&gt;/api/v1/stock?status=out&quot;</code></pre>
+<p>Add a product from your website:</p>
+<pre><code>curl -X POST &quot;https://&lt;your-anbari-address&gt;/api/v1/products&quot; \
+  -H &quot;Authorization: Bearer $ANBARI_KEY&quot; -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Idempotency-Key: $(uuidgen)&quot; \
+  -d &#39;{&quot;name&quot;:&quot;Chocolate cake&quot;,&quot;sku&quot;:&quot;CK-1&quot;,&quot;category&quot;:&quot;Cakes&quot;,&quot;price&quot;:50000}&#39;</code></pre>
+<p>Keep your website&#39;s copy up to date (server side, every few minutes):</p>
+<pre><code>let revision = savedRevision; // from your database
+const res = await fetch(`https://&lt;your-anbari-address&gt;/api/v1/changes?since=${revision}`, {
+  headers: { Authorization: `Bearer ${process.env.ANBARI_KEY}` }
+});
+const data = await res.json();
+if (data.fullResyncRequired) { /* read GET /products again */ }
+else for (const p of data.products) p.removed ? removeProduct(p.id) : saveProduct(p);
+saveRevision(data.revision);</code></pre>
+<p>Menu website (server side, Node.js 18+):</p>
+<pre><code>const res = await fetch(&#39;https://&lt;your-anbari-address&gt;/api/v1/inventory?limit=500&#39;, {
+  headers: { Authorization: `Bearer ${process.env.ANBARI_KEY}` }
+});
+const { products } = await res.json();
+const menu = products.filter(p =&gt; p.available).map(p =&gt; ({ name: p.name, price: p.price }));</code></pre>
+<p>Record a sale:</p>
+<pre><code>curl -X POST &quot;https://&lt;your-anbari-address&gt;/api/v1/sales&quot; \
+  -H &quot;Authorization: Bearer $ANBARI_KEY&quot; -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Idempotency-Key: $(uuidgen)&quot; \
+  -d &#39;{&quot;lines&quot;:[{&quot;name&quot;:&quot;Latte&quot;,&quot;quantity&quot;:2}],&quot;paymentMethod&quot;:&quot;card&quot;,&quot;note&quot;:&quot;Order 1042&quot;}&#39;</code></pre>
+<p>Send a stock-count Excel file (check first with a dry run):</p>
+<pre><code>curl -X POST &quot;https://&lt;your-anbari-address&gt;/api/v1/import?dryRun=true&quot; \
+  -H &quot;Authorization: Bearer $ANBARI_KEY&quot; \
+  -H &quot;Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot; \
+  --data-binary @stock.xlsx</code></pre>
+<h2 id="using-an-ai-assistant-claude">Using an AI assistant (Claude)</h2>
+<p>The Connections screen has a ready text that explains these endpoints to an assistant. Give the assistant a key with only the scopes it needs (start with <code>inventory:read</code>), ask it to use a dry run before any import, and revoke the key when you are done.</p></main></body></html>

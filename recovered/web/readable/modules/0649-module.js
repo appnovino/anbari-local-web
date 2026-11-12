@@ -1,0 +1,34 @@
+// Extracted verbatim from the PUBLIC WEB bundle; formatting only.
+// Metro module 649; original bundle: App-659666a99f2f01630312af1cf82147aa.js
+// This is a bundled module factory, not an original TSX source file.
+__d(
+  function (g, r, i, a, m, e, d) {
+    'use strict';
+    (Object.defineProperty(e, '__esModule', { value: !0 }),
+      Object.defineProperty(e, 'default', {
+        enumerable: !0,
+        get: function () {
+          return h;
+        },
+      }));
+    var t = r(d[0]),
+      n = r(d[1]),
+      h = (h, c) => {
+        const o = c === t.FlipType.Horizontal,
+          l = c === t.FlipType.Vertical,
+          u = document.createElement('canvas');
+        ((u.width = h.width), (u.height = h.height));
+        const s = (0, n.getContext)(u);
+        s.translate(h.width / 2, h.height / 2);
+        const p = o ? -1 : 1,
+          w = l ? -1 : 1;
+        return (
+          s.scale(p, w),
+          s.drawImage(h, -h.width / 2, -h.height / 2, h.width, h.height),
+          u
+        );
+      };
+  },
+  649,
+  [641, 645],
+);

@@ -1,0 +1,190 @@
+// Extracted verbatim from the PUBLIC WEB bundle; formatting only.
+// Metro module 232; original bundle: index-4d9dce5f8f280a52ba0b02536c7db777.js
+// This is a bundled module factory, not an original TSX source file.
+__d(
+  function (g, r, i, a, m, _e, _d) {
+    'use strict';
+    function e(e) {
+      return e && e.__esModule ? e : { default: e };
+    }
+    (Object.defineProperty(_e, '__esModule', { value: !0 }),
+      Object.defineProperty(_e, 'default', {
+        enumerable: !0,
+        get: function () {
+          return p;
+        },
+      }));
+    var n = e(r(_d[0])),
+      t = e(r(_d[1])),
+      o = r(_d[2]),
+      s = (function (e) {
+        if (e && e.__esModule) return e;
+        var n = {};
+        return (
+          e &&
+            Object.keys(e).forEach(function (t) {
+              var o = Object.getOwnPropertyDescriptor(e, t);
+              Object.defineProperty(
+                n,
+                t,
+                o.get
+                  ? o
+                  : {
+                      enumerable: !0,
+                      get: function () {
+                        return e[t];
+                      },
+                    },
+              );
+            }),
+          (n.default = e),
+          n
+        );
+      })(o),
+      l = e(r(_d[3])),
+      u = e(r(_d[4])),
+      d = e(r(_d[5])),
+      c = e(r(_d[6])),
+      f = e(r(_d[7])),
+      v = [
+        'children',
+        'delayLongPress',
+        'delayPressIn',
+        'delayPressOut',
+        'disabled',
+        'onBlur',
+        'onContextMenu',
+        'onFocus',
+        'onHoverIn',
+        'onHoverOut',
+        'onKeyDown',
+        'onLongPress',
+        'onPress',
+        'onPressMove',
+        'onPressIn',
+        'onPressOut',
+        'style',
+        'tabIndex',
+        'testOnly_hovered',
+        'testOnly_pressed',
+      ];
+    function P(e, c) {
+      var P = e.children,
+        O = e.delayLongPress,
+        p = e.delayPressIn,
+        _ = e.delayPressOut,
+        M = e.disabled,
+        C = e.onBlur,
+        h = e.onContextMenu,
+        I = e.onFocus,
+        x = e.onHoverIn,
+        E = e.onHoverOut,
+        H = e.onKeyDown,
+        w = e.onLongPress,
+        L = e.onPress,
+        j = e.onPressMove,
+        k = e.onPressIn,
+        D = e.onPressOut,
+        K = e.style,
+        S = e.tabIndex,
+        B = e.testOnly_hovered,
+        F = e.testOnly_pressed,
+        R = (0, t.default)(e, v),
+        A = y(!0 === B),
+        N = A[0],
+        q = A[1],
+        z = y(!1),
+        G = z[0],
+        J = z[1],
+        Q = y(!0 === F),
+        T = Q[0],
+        U = Q[1],
+        V = (0, o.useRef)(null),
+        W = (0, l.default)(c, V),
+        X = (0, o.useMemo)(
+          () => ({
+            delayLongPress: O,
+            delayPressStart: p,
+            delayPressEnd: _,
+            disabled: M,
+            onLongPress: w,
+            onPress: L,
+            onPressChange: U,
+            onPressStart: k,
+            onPressMove: j,
+            onPressEnd: D,
+          }),
+          [O, p, _, M, w, L, k, j, D, U],
+        ),
+        Y = (0, d.default)(V, X),
+        Z = Y.onContextMenu,
+        $ = Y.onKeyDown;
+      (0, u.default)(V, {
+        contain: !0,
+        disabled: M,
+        onHoverChange: q,
+        onHoverStart: x,
+        onHoverEnd: E,
+      });
+      var ee,
+        ne = { hovered: N, focused: G, pressed: T },
+        te = s.useCallback(
+          (e) => {
+            e.nativeEvent.target === V.current && (J(!1), null != C && C(e));
+          },
+          [V, J, C],
+        ),
+        oe = s.useCallback(
+          (e) => {
+            e.nativeEvent.target === V.current && (J(!0), null != I && I(e));
+          },
+          [V, J, I],
+        ),
+        re = s.useCallback(
+          (e) => {
+            (null != Z && Z(e), null != h && h(e));
+          },
+          [h, Z],
+        ),
+        se = s.useCallback(
+          (e) => {
+            (null != $ && $(e), null != H && H(e));
+          },
+          [H, $],
+        );
+      return (
+        (ee = void 0 !== S ? S : M ? -1 : 0),
+        s.createElement(
+          f.default,
+          (0, n.default)({}, R, Y, {
+            'aria-disabled': M,
+            onBlur: te,
+            onContextMenu: re,
+            onFocus: oe,
+            onKeyDown: se,
+            ref: W,
+            style: [
+              M ? b.disabled : b.active,
+              'function' == typeof K ? K(ne) : K,
+            ],
+            tabIndex: ee,
+          }),
+          'function' == typeof P ? P(ne) : P,
+        )
+      );
+    }
+    function y(e) {
+      var n = (0, o.useState)(!1);
+      return [n[0] || e, n[1]];
+    }
+    var b = c.default.create({
+        active: { cursor: 'pointer', touchAction: 'manipulation' },
+        disabled: { pointerEvents: 'box-none' },
+      }),
+      O = (0, o.memo)((0, o.forwardRef)(P));
+    O.displayName = 'Pressable';
+    var p = O;
+  },
+  232,
+  [96, 16, 2, 104, 233, 220, 17, 99],
+);
