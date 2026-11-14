@@ -192,7 +192,28 @@ export function returnDocument(client, shop, user, id, body, key) {
   });
 }
 
-export async function summary(client, shopId) {
+export async function summary(client, shopId, from = null, to = null) {
+  let source = 'shop_report_totals WHERE shop_id=$1';
+  const params = [shopId];
+  if (from !== null || to !== null) {
+    const day = value => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value ?? '') || value < '1900-01-01' || value > '9998-12-31') fail(400, 'invalid_report_range');
+      const date = new Date(value + 'T00:00:00Z');
+      if (!Number.isFinite(date.valueOf()) || date.toISOString().slice(0, 10) !== value) fail(400, 'invalid_report_range');
+      return date.valueOf();
+    };
+    const span = day(to) - day(from);
+    if (span < 0 || span >= 366 * 86400000) fail(400, 'invalid_report_range');
+    params.push(from, to);
+    source = `(
+      SELECT COALESCE(original.kind, d.kind) AS kind,
+             CASE WHEN d.reverses_id IS NULL THEN d.amount ELSE -d.amount END AS amount
+      FROM documents d
+      LEFT JOIN documents original ON original.shop_id=d.shop_id AND original.id=d.reverses_id
+      WHERE d.shop_id=$1 AND d.created_at >= ($2::date::timestamp AT TIME ZONE 'Asia/Tehran')
+        AND d.created_at < (($3::date+1)::timestamp AT TIME ZONE 'Asia/Tehran')
+    ) AS dated_documents`;
+  }
   const { rows: [result] } = await client.query(
     `SELECT
       COALESCE(SUM(amount) FILTER (WHERE kind='sale'),0) - COALESCE(SUM(amount) FILTER (WHERE kind='sale-return'),0) AS sales,
@@ -200,7 +221,7 @@ export async function summary(client, shopId) {
       COALESCE(SUM(amount) FILTER (WHERE kind='receipt'),0) AS receipts,
       COALESCE(SUM(amount) FILTER (WHERE kind='payment'),0) AS payments,
       COALESCE(SUM(amount) FILTER (WHERE kind='expense'),0) AS expenses
-    FROM shop_report_totals WHERE shop_id=$1`, [shopId],
+    FROM ${source}`, params,
   );
   return result;
 }

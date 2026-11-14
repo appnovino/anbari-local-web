@@ -280,7 +280,8 @@ export function createApi(db, {
     shopRoute('PATCH', '/' + kind + '/([^/]+)', 'write', (client, shop, { body }, id) =>
       updateTask(client, shop, kind, identifier(id), body));
   }
-  shopRoute('GET', '/reports/summary', 'read', (client, shop) => summary(client, shop.id));
+  shopRoute('GET', '/reports/summary', 'read', (client, shop, { url }) =>
+    summary(client, shop.id, url.searchParams.get('from'), url.searchParams.get('to')));
   shopRoute('GET', '/payroll/employees', 'owner', (client, shop, { url }) => listed(client,
     'SELECT id,name FROM employees WHERE shop_id=$1 ORDER BY name,id LIMIT $2 OFFSET $3', [shop.id, ...page(url)]));
   shopRoute('POST', '/payroll/employees', 'owner', (client, shop, { body }) => createEmployee(client, shop, body), 201);

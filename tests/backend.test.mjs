@@ -159,6 +159,13 @@ test('real PostgreSQL API persists tenant-scoped, atomic inventory and accountin
   await post(root + '/documents/' + payroll.documentId + '/reverse', {}, { token, key: 'direct-payroll-reverse', status: 409 });
   await post(root + '/payroll/payments/' + payroll.id + '/reverse', {}, { token, key: 'reverse-payroll' });
   assert.equal((await call(root + '/reports/summary', { token })).expenses, '0');
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tehran',
+    year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+  const day = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  const today = [day.year, day.month, day.day].join('-');
+  assert.deepEqual(await call(root + '/reports/summary?from=' + today + '&to=' + today, { token }),
+    await call(root + '/reports/summary', { token }));
+  await call(root + '/reports/summary?from=2026-02-30&to=2026-03-01', { token, status: 400 });
   assert.equal((await call(root + '/ai/status', { token })).ready, false);
   await post(root + '/ai/invoices/parse', { text: 'Tea' }, { token, status: 503 });
   await call('/v1/auth/logout', { method: 'POST', token });

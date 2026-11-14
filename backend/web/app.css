@@ -18,6 +18,9 @@ section { background: #fff; border: 1px solid #d9e4df; border-radius: .9rem; pad
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .85rem; }
 .cards > section { margin-block: 0; }
 form { display: grid; gap: .7rem; margin-block: .75rem; max-width: 44rem; }
+.invoice-lines { display: grid; gap: .65rem; }
+.invoice-line { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); min-width: 0; border: 1px solid #d9e4df; border-radius: .55rem; }
+.invoice-line button { align-self: end; }
 label { display: grid; gap: .25rem; }
 input, select, textarea, button, .action { font: inherit; padding: .45rem .7rem; border: 1px solid #9db2ab; border-radius: .45rem; }
 input, select, textarea { min-width: 0; max-width: 100%; background: white; color: inherit; }

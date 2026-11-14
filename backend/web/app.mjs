@@ -28,6 +28,8 @@ const errors = {
   sms_send_unavailable: 'ارسال پیامک انجام نشد. بعداً دوباره تلاش کنید.',
   service_limit_reached: 'سقف درخواست پر شده است. بعداً دوباره تلاش کنید.',
   api_rate_limited: 'تعداد درخواست‌ها زیاد است. یک دقیقه صبر کنید.',
+  duplicate_product: 'هر کالا را یک بار وارد کنید و تعداد را در همان قلم بنویسید.',
+  invalid_report_range: 'بازهٔ گزارش باید معتبر و حداکثر ۳۶۶ روز باشد.',
   platform_admin_required: 'این حساب دسترسی مدیریت سامانه ندارد.',
   insufficient_stock: 'موجودی این انبار کافی نیست.',
   registration_closed: 'ثبت‌نام در حال حاضر بسته است.',
@@ -150,6 +152,45 @@ function shopForm(label, fields, path, body = values, method = 'POST') {
   });
 }
 
+function movementForm(label, fields, products, action, { priced = false, signed = false } = {}) {
+  const lines = element('div', { class: 'invoice-lines' });
+  function addLine() {
+    const choices = options(products);
+    const line = element('fieldset', { class: 'invoice-line' }, element('legend', {}, 'قلم کالا'),
+      select('productId', 'کالا', choices, 'انتخاب کالا'),
+      numeric('quantity', 'تعداد', signed ? '-999999999' : '0.001', '0.001'),
+      priced ? numeric('unitPrice', 'قیمت واحد به تومان') : null);
+    const remove = button('حذف قلم', () => {
+      line.remove();
+      lines.dispatchEvent(new Event('input', { bubbles: true }));
+      refresh();
+    });
+    line.append(remove);
+    lines.append(line);
+    refresh();
+  }
+  const add = button('افزودن قلم', () => {
+    addLine();
+    lines.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  function refresh() {
+    add.hidden = lines.children.length >= Math.min(products.length, 100);
+    for (const row of lines.children) row.lastElementChild.hidden = lines.children.length === 1;
+  }
+  addLine();
+  return form(label, [...fields, lines, add], (data, key) => {
+    const ids = data.getAll('productId');
+    if (new Set(ids).size !== ids.length) throw new Error('duplicate_product');
+    const quantities = data.getAll('quantity');
+    const prices = data.getAll('unitPrice');
+    for (const name of ['productId', 'quantity', 'unitPrice']) data.delete(name);
+    const movements = ids.map((productId, index) => ({
+      productId, quantity: quantities[index], ...(priced ? { unitPrice: Number(prices[index]) } : {}),
+    }));
+    return action(values(data), movements, key);
+  });
+}
+
 function smsForm(purpose) {
   const container = element('div');
   const base = '/auth/sms/' + purpose;
@@ -230,6 +271,14 @@ async function inventoryView(shop) {
     [row.name, row.sku, number.format(row.stock), editor(row, '/products', 'sku', 'کد کالا')])));
   const contactPanel = panel('طرف حساب و باشگاه مشتریان', table(['نام', 'مانده به تومان', 'امتیاز', 'عملیات'], contacts.items.map(row =>
     [row.name, money(row.balance), money(row.points), editor(row, '/contacts', 'phone', 'تلفن')])));
+  if (shop.role === 'owner') {
+    const settings = await shopApi('');
+    contactPanel.append(title('تنظیم امتیاز باشگاه', [shopForm('ذخیره نرخ امتیاز', [
+      input('pointsPerSale', 'امتیاز به‌ازای هر واحد فروخته‌شده', {
+        type: 'number', min: '0', max: '1000000', step: '1', value: settings.pointsPerSale,
+      }),
+    ], '', fields => ({ pointsPerSale: Number(fields.get('pointsPerSale')) }), 'PATCH')]));
+  }
   const stock = element('div');
   const warehousePanel = panel('انبارها', element('div', { class: 'row' }, ...warehouses.items.map(row =>
     button(row.name, async () => {
@@ -245,9 +294,29 @@ async function inventoryView(shop) {
     contactPanel.append(creation('/contacts', 'ثبت طرف حساب', [input('name', 'نام طرف حساب'), optional(input('phone', 'تلفن'))]));
   }
   if (shop.role === 'owner') warehousePanel.append(creation('/warehouses', 'ثبت انبار', [input('name', 'نام انبار')]));
-  const totals = [['خرید', report.purchases], ['فروش', report.sales], ['دریافت', report.receipts],
-    ['پرداخت', report.payments], ['هزینه', report.expenses]];
-  return element('div', {}, panel('خلاصه به تومان', table(['عنوان', 'مبلغ'], totals.map(([name, total]) => [name, money(total)]))),
+  const figures = data => [['خرید', data.purchases], ['فروش', data.sales], ['دریافت', data.receipts],
+    ['پرداخت', data.payments], ['هزینه', data.expenses]];
+  const totals = element('div');
+  let activeReport = report;
+  function setReport(data) {
+    activeReport = data;
+    totals.replaceChildren(table(['عنوان', 'مبلغ'], figures(data).map(([name, total]) => [name, money(total)])));
+  }
+  setReport(report);
+  const filter = form('نمایش بازه', [
+    input('from', 'از تاریخ', { type: 'date' }), input('to', 'تا تاریخ', { type: 'date' }),
+  ], async fields => setReport(await shopApi('/reports/summary?' + new URLSearchParams(fields))));
+  const exportReport = button('دانلود CSV', () => {
+    const csv = ['عنوان,مبلغ به تومان', ...figures(activeReport).map(row => row.join(','))].join('\r\n');
+    const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
+    const link = element('a', { href: url, download: 'novino-report.csv' });
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+  return element('div', {}, panel('خلاصه به تومان', filter,
+    element('div', { class: 'row' }, button('همهٔ تاریخ‌ها', () => { filter.reset(); setReport(report); }), exportReport), totals),
     element('div', { class: 'cards' }, productPanel, contactPanel, warehousePanel));
 }
 
@@ -261,19 +330,16 @@ async function documentsView(shop) {
       detail.replaceChildren(await documentDetails(row.id, products.items, shop.role !== 'viewer'));
     })])), detail);
   if (shop.role === 'viewer') return list;
-  const movement = form('ثبت خرید یا فروش', [
+  const movement = products.items.length ? movementForm('ثبت خرید یا فروش', [
     select('kind', 'نوع سند', [['purchase', 'خرید'], ['sale', 'فروش']]),
     select('warehouseId', 'انبار', options(warehouses.items)),
     optional(select('contactId', 'طرف حساب', options(contacts.items), 'بدون طرف حساب')),
-    select('productId', 'کالا', options(products.items)), input('quantity', 'تعداد', { type: 'number', min: '0.001', step: '0.001' }),
-    input('unitPrice', 'قیمت واحد به تومان', { type: 'number', min: '0', step: '1' }),
-  ], async (fields, key) => {
-    const { kind, warehouseId, contactId, productId, quantity, unitPrice } = values(fields);
-    await shopApi('/documents', post({ kind, warehouseId, contactId: contactId || null,
-      lines: [{ productId, quantity, unitPrice: Number(unitPrice) }] }, key));
+    optional(input('note', 'توضیح سند')),
+  ], products.items, async ({ contactId, ...fields }, lines, key) => {
+    await shopApi('/documents', post({ ...fields, contactId: contactId || null, lines }, key));
     await render();
     message('سند ثبت شد.');
-  });
+  }, { priced: true }) : null;
   const simple = shopForm('ثبت سند', [
     select('kind', 'نوع عملیات', [['receipt', 'دریافت'], ['payment', 'پرداخت'], ['expense', 'هزینه'], ['redemption', 'مصرف امتیاز']]),
     optional(select('contactId', 'طرف حساب', options(contacts.items), 'بدون طرف حساب')),
@@ -283,18 +349,23 @@ async function documentsView(shop) {
     return { kind, contactId: kind === 'expense' ? null : contactId || null, note,
       [kind === 'redemption' ? 'points' : 'amount']: Number(value) };
   });
-  const transfer = shopForm('انتقال کالا', [
+  const saveMovement = kind => async (fields, lines, key) => {
+    await shopApi('/documents', post({ ...fields, kind, lines }, key));
+    await render();
+  };
+  const transfer = warehouses.items.length > 1 && products.items.length ? movementForm('انتقال کالا', [
     select('fromWarehouseId', 'از انبار', options(warehouses.items)),
     select('toWarehouseId', 'به انبار', options(warehouses.items)),
-    select('productId', 'کالا', options(products.items)), numeric('quantity', 'تعداد', '0.001', '0.001'),
-  ], '/documents', fields => {
-    const { fromWarehouseId, toWarehouseId, productId, quantity } = values(fields);
-    return { kind: 'transfer', fromWarehouseId, toWarehouseId, lines: [{ productId, quantity }] };
-  });
+  ], products.items, saveMovement('transfer')) : null;
+  const adjustment = products.items.length ? movementForm('ثبت اصلاح موجودی', [
+    select('warehouseId', 'انبار', options(warehouses.items)),
+    optional(input('note', 'علت اصلاح')),
+  ], products.items, saveMovement('adjustment'), { signed: true }) : null;
   return element('div', {}, panel('خرید و فروش', products.items.length ? movement :
     element('p', {}, 'ابتدا از بخش انبار یک کالا ثبت کنید.')), list,
   panel('عملیات دیگر', title('دریافت، پرداخت، هزینه و امتیاز', [simple]),
-    warehouses.items.length > 1 && products.items.length ? title('انتقال بین انبارها', [transfer]) : null));
+    transfer ? title('انتقال بین انبارها', [transfer]) : null,
+    adjustment ? title('اصلاح موجودی', [adjustment]) : null));
 }
 
 async function documentDetails(id, products, writable) {
@@ -340,10 +411,13 @@ async function documentDetails(id, products, writable) {
     await render();
   }));
   if (['purchase', 'sale'].includes(doc.kind) && doc.movements.length) {
-    documentPanel.append(title('برگشت کالا', [shopForm('ثبت برگشت', [
-      select('productId', 'کالا', doc.movements.map(row => [row.productId, productName(row.productId)])),
-      numeric('quantity', 'تعداد برگشت', '0.001', '0.001'),
-    ], path + '/returns', fields => ({ lines: [values(fields)] }))]));
+    const eligible = doc.movements.map(row => ({ id: row.productId, name: productName(row.productId) }));
+    documentPanel.append(title('برگشت کالا', [movementForm('ثبت برگشت', [
+      optional(input('note', 'توضیح برگشت')),
+    ], eligible, async (fields, lines, key) => {
+      await shopApi(path + '/returns', post({ ...fields, lines }, key));
+      await render();
+    })]));
   }
   if (!['reversal', 'purchase-return', 'sale-return'].includes(doc.kind)) {
     documentPanel.append(button('ثبت سند معکوس', async () => {
