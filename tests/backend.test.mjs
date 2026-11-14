@@ -165,6 +165,30 @@ test('real PostgreSQL API persists tenant-scoped, atomic inventory and accountin
   await call(root + '/products', { token, status: 401 });
 });
 
+test('admin access, session revocation and bounded request quota', async t => {
+  const { call, post, db, origin } = await fixture(t, () => ({ readLimit: 180, writeLimit: 12 }));
+  assert.equal((await fetch(origin + '/admin')).status, 200);
+  await call('/v1/admin/overview', { status: 401 });
+  const password = 'old-test-password';
+  const user = await post('/v1/auth/register', { email: 'admin@example.test', name: 'Admin', password });
+  await call('/v1/admin/overview', { token: user.token, status: 403 });
+  await db.query('INSERT INTO platform_admins(user_id) VALUES($1)', [user.user.id]);
+  const admin = await call('/v1/admin/overview', { token: user.token });
+  assert.deepEqual(admin.integrations, { ai: false, sms: false, billing: false });
+  assert.equal(admin.counts.accounts, '1');
+  const changed = await post('/v1/auth/password', { password, newPassword: 'changed-test-password' },
+    { token: user.token, status: 200 });
+  await call('/v1/admin/overview', { token: user.token, status: 401 });
+  await call('/v1/admin/overview', { token: changed.token });
+  const replies = await Promise.all(Array.from({ length: 18 }, () => fetch(origin + '/v1/shops', {
+    method: 'POST', headers: { Authorization: 'Bearer ' + changed.token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Quota test' }),
+  })));
+  assert.ok(replies.some(response => response.status === 429 && response.headers.get('retry-after')));
+  assert.ok(replies.some(response => response.status === 201));
+  await Promise.all(replies.map(response => response.arrayBuffer()));
+});
+
 test('configured services enforce SMS proof, Zibal reconciliation and AI limits', async t => {
   let code, providerOrder, providerAmount, billing, smsCalls = 0, verifyCalls = 0, bankCalls = 0;
   let providerReady = false;

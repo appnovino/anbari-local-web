@@ -16,6 +16,12 @@ function passwordValue(value) {
   return value;
 }
 
+export async function hashPassword(value) {
+  const salt = randomBytes(16);
+  const hash = await derive(passwordValue(value), salt, 64, passwordCost);
+  return 's2:' + salt.toString('hex') + ':' + hash.toString('hex');
+}
+
 export async function createSession(db, user) {
   const token = randomBytes(32).toString('base64url');
   const { rows: [session] } = await db.query(
@@ -28,22 +34,21 @@ export async function createSession(db, user) {
 export async function register(db, body) {
   const email = emailAddress(body.email);
   const name = fieldText(body.name, 'name', 100);
-  const password = passwordValue(body.password);
-  const salt = randomBytes(16);
-  const hash = await derive(password, salt, 64, passwordCost);
+  const hash = await hashPassword(body.password);
   return transaction(db, async client => {
     const { rows: [user] } = await client.query(
       'INSERT INTO users(id,email,name,password_hash) VALUES ($1,$2,$3,$4) ON CONFLICT(email) DO NOTHING RETURNING id,email,name',
-      [randomUUID(), email, name, 's2:' + salt.toString('hex') + ':' + hash.toString('hex')],
+      [randomUUID(), email, name, hash],
     );
     if (!user) fail(409, 'email_in_use');
     return createSession(client, user);
   });
 }
 
-export async function passwordUser(db, email, rawPassword) {
+export async function passwordUser(db, email, rawPassword, lock = false) {
   const password = passwordValue(rawPassword);
-  const { rows: [row] } = await db.query('SELECT id,email,name,password_hash FROM users WHERE email=$1', [email]);
+  const { rows: [row] } = await db.query(
+    'SELECT id,email,name,password_hash FROM users WHERE email=$1' + (lock ? ' FOR UPDATE' : ''), [email]);
   const parts = row?.password_hash.split(':');
   const upgraded = !row || parts[0] === 's2';
   const [salt, hash] = parts ? parts.slice(-2).map(value => Buffer.from(value, 'hex')) : [dummySalt, dummyHash];
@@ -59,7 +64,25 @@ export async function passwordUser(db, email, rawPassword) {
 }
 
 export async function login(db, body) {
-  return createSession(db, await passwordUser(db, emailAddress(body.email), body.password));
+  const email = emailAddress(body.email);
+  return transaction(db, async client =>
+    createSession(client, await passwordUser(client, email, body.password, true)));
+}
+
+export async function changePassword(db, user, sessionHash, body) {
+  const verified = await passwordUser(db, user.email, body.password);
+  if (verified.id !== user.id) fail(401, 'invalid_credentials');
+  if (body.password === body.newPassword) fail(400, 'password_unchanged');
+  const hash = await hashPassword(body.newPassword);
+  return transaction(db, async client => {
+    await client.query('SELECT id FROM users WHERE id=$1 FOR UPDATE', [user.id]);
+    const active = await client.query(
+      'SELECT 1 FROM sessions WHERE token_hash=$1 AND user_id=$2 AND expires_at>now()', [sessionHash, user.id]);
+    if (!active.rowCount) fail(401, 'authentication_required');
+    await client.query('UPDATE users SET password_hash=$2 WHERE id=$1', [user.id, hash]);
+    await client.query('DELETE FROM sessions WHERE user_id=$1', [user.id]);
+    return createSession(client, user);
+  });
 }
 
 export async function authenticate(db, authorization) {

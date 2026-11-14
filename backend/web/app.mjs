@@ -5,6 +5,7 @@ const shopKey = 'novino.shop';
 const number = new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 3 });
 const date = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' });
 const paymentId = new URLSearchParams(location.search).get('payment');
+const adminPage = location.pathname === '/admin';
 let token = sessionStorage.getItem(sessionKey);
 let shopId = sessionStorage.getItem(shopKey);
 let methods;
@@ -26,6 +27,8 @@ const errors = {
   sms_code_invalid_or_expired: 'کد پیامک نامعتبر، مصرف‌شده یا منقضی است.',
   sms_send_unavailable: 'ارسال پیامک انجام نشد. بعداً دوباره تلاش کنید.',
   service_limit_reached: 'سقف درخواست پر شده است. بعداً دوباره تلاش کنید.',
+  api_rate_limited: 'تعداد درخواست‌ها زیاد است. یک دقیقه صبر کنید.',
+  platform_admin_required: 'این حساب دسترسی مدیریت سامانه ندارد.',
   insufficient_stock: 'موجودی این انبار کافی نیست.',
   registration_closed: 'ثبت‌نام در حال حاضر بسته است.',
   server_busy: 'سرویس مشغول است. کمی بعد دوباره تلاش کنید.',
@@ -179,14 +182,40 @@ function loginView() {
     remember((await api('/auth/login', post(values(fields)))).token);
     await render();
   });
-  const register = methods.registration ? panel('ساخت حساب', form('ثبت‌نام', [
+  const register = methods.registration && !adminPage ? panel('ساخت حساب', form('ثبت‌نام', [
     input('name', 'نام', { autocomplete: 'name' }), ...credentials(),
   ], async fields => {
     remember((await api('/auth/register', post(values(fields)))).token);
     await render();
   })) : null;
-  return element('div', { class: 'cards' }, panel('ورود به نووینو', signIn), register,
+  return element('div', { class: 'cards' }, panel(adminPage ? 'ورود مدیر سامانه' : 'ورود به نووینو', signIn), register,
     methods.sms ? panel('ورود با پیامک', smsForm('login')) : null);
+}
+
+async function adminView(user) {
+  const { counts, integrations, limits } = await api('/admin/overview');
+  const state = key => integrations[key] ? 'فعال در تنظیمات سرور' : 'در انتظار تنظیم روی سرور';
+  const passwordForm = form('ذخیره رمز جدید', [
+    input('password', 'رمز فعلی', { type: 'password', autocomplete: 'current-password' }),
+    input('newPassword', 'رمز جدید', { type: 'password', autocomplete: 'new-password', minlength: '12' }),
+  ], async fields => {
+    remember((await api('/auth/password', post(values(fields)))).token);
+    await render();
+    message('رمز تغییر کرد و نشست‌های قبلی بسته شدند.');
+  });
+  return element('div', {},
+    element('div', { class: 'row' }, element('h1', {}, 'مدیریت نووینو'), element('span', {}, user.email),
+      element('a', { class: 'action', href: '/' }, 'ورود به برنامه'),
+      button('خروج', async () => { await api('/auth/logout', { method: 'POST' }); remember(null); await render(); })),
+    panel('وضعیت سرویس‌ها', table(['سرویس', 'وضعیت'], [['هوش مصنوعی', state('ai')],
+      ['کاوه‌نگار', state('sms')], ['زیبال', state('billing')]])),
+    panel('آمار و محدودیت‌ها', table(['عنوان', 'مقدار'], [
+      ['حساب‌ها', money(counts.accounts)], ['فروشگاه‌ها', money(counts.shops)], ['اشتراک‌های فعال', money(counts.subscriptions)],
+      ['خواندن در دقیقه برای هر IP', number.format(limits.readPerMinute)],
+      ['نوشتن در دقیقه برای هر IP', number.format(limits.writePerMinute)],
+      ['درخواست هم‌زمان', number.format(limits.concurrent)],
+    ])),
+    panel('تغییر رمز عبور', passwordForm));
 }
 
 async function inventoryView(shop) {
@@ -467,6 +496,12 @@ async function render() {
       root.replaceChildren(loginView());
       return;
     }
+    if (adminPage) {
+      const { user } = await api('/auth/session');
+      const page = await adminView(user);
+      if (current()) root.replaceChildren(page);
+      return;
+    }
     const [{ user }, { items: shops }] = await Promise.all([api('/auth/session'), api('/shops')]);
     if (!current()) return;
     const shop = shops.find(item => item.id === shopId) ?? shops[0];
@@ -499,6 +534,10 @@ async function render() {
   } catch (error) {
     if (current()) {
       displayError(error);
+      if (adminPage && error.message === 'platform_admin_required') {
+        root.replaceChildren(panel('مدیریت نووینو',
+          button('خروج', async () => { await api('/auth/logout', { method: 'POST' }); remember(null); await render(); })));
+      }
       root.querySelector('[aria-busy]')?.remove();
       if (!root.childNodes.length) root.append(button('تلاش دوباره', render));
     }

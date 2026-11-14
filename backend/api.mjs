@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { isIP } from 'node:net';
 import { attachmentColumns, deleteAttachment, readAttachment, uploadAttachment } from './attachments.mjs';
-import { authenticate, digest, login, register } from './auth.mjs';
+import { authenticate, changePassword, digest, login, register } from './auth.mjs';
 import { postDocument, returnDocument, reverseDocument, summary } from './documents.mjs';
 import { ApiError, emailAddress, fail, fieldText, identifier } from './input.mjs';
 import { createEmployee, payrollColumns, recordPayroll, reversePayroll } from './payroll.mjs';
@@ -60,6 +60,7 @@ async function listed(client, sql, args) {
 
 export function createApi(db, {
   allowRegistration = false, trustLoopbackProxy = false, intelligence = null, sms = null, billing = null, maxRequests = 48,
+  readLimit = 180, writeLimit = 60,
 } = {}) {
   const routes = [];
   const route = (method, path, run, { publicRoute = false, status = 200 } = {}) => {
@@ -76,6 +77,23 @@ export function createApi(db, {
   let pendingAI = 0;
   let pendingRequests = 0;
   let pendingUploads = 0;
+  const traffic = new Map();
+  let nextSweep = 0;
+  function limitApi(ip, method) {
+    const now = Date.now();
+    if (now >= nextSweep) {
+      for (const [key, entry] of traffic) if (now - entry.at >= 60000) traffic.delete(key);
+      nextSweep = now + 60000;
+    }
+    const read = ['GET', 'HEAD'].includes(method);
+    const rate = read ? readLimit : writeLimit;
+    const key = (read ? 'r:' : 'w:') + ip;
+    const entry = traffic.get(key);
+    if (!entry && traffic.size >= 10000) fail(429, 'api_rate_limited');
+    const available = entry ? Math.min(rate, entry.tokens + (now - entry.at) * rate / 60000) : rate;
+    if (available < 1) fail(429, 'api_rate_limited');
+    traffic.set(key, { tokens: available - 1, at: now });
+  }
   function limitAuth(ip) {
     if (Date.now() >= resetAt) {
       attempts = new Map();
@@ -87,7 +105,7 @@ export function createApi(db, {
   }
   async function authAttempt(ip, run) {
     limitAuth(ip);
-    if (pendingAuth >= 16) fail(429, 'too_many_auth_attempts');
+    if (pendingAuth >= 4) fail(429, 'too_many_auth_attempts');
     pendingAuth += 1;
     try { return await run(); }
     finally { pendingAuth -= 1; }
@@ -123,6 +141,24 @@ export function createApi(db, {
     }
   }
   route('GET', '/v1/auth/session', ({ user }) => ({ user }));
+  route('POST', '/v1/auth/password', ({ user, sessionHash, body, ip }) =>
+    authAttempt(ip, async () => {
+      await takeLimit(db, 'password-change', user.id, 900, 5);
+      return changePassword(db, user, sessionHash, body);
+    }));
+  route('GET', '/v1/admin/overview', async ({ user }) => {
+    const allowed = await db.query('SELECT 1 FROM platform_admins WHERE user_id=$1', [user.id]);
+    if (!allowed.rowCount) fail(403, 'platform_admin_required');
+    const { rows: [counts] } = await db.query(`SELECT
+      (SELECT count(*) FROM users) AS accounts,
+      (SELECT count(*) FROM shops) AS shops,
+      (SELECT count(*) FROM shop_subscriptions WHERE expires_at>now()) AS subscriptions`);
+    return {
+      counts,
+      integrations: { ai: Boolean(intelligence), sms: Boolean(sms), billing: Boolean(billing) },
+      limits: { readPerMinute: readLimit, writePerMinute: writeLimit, concurrent: maxRequests },
+    };
+  });
   route('POST', '/v1/auth/logout', async ({ sessionHash }) => {
     await db.query('DELETE FROM sessions WHERE token_hash=$1', [sessionHash]);
     return { ok: true };
@@ -285,6 +321,8 @@ export function createApi(db, {
     try {
       const url = new URL(request.url, 'http://localhost');
       if (serveWeb(request, response, url.pathname)) return;
+      const ip = clientAddress(request);
+      if (url.pathname.startsWith('/v1/')) limitApi(ip, request.method);
       const match = routes.find(candidate => candidate.method === request.method && candidate.pattern.test(url.pathname));
       if (!match) fail(404, 'route_not_found');
       const session = match.publicRoute ? {} : await authenticate(db, request.headers.authorization);
@@ -295,7 +333,7 @@ export function createApi(db, {
       }
       const body = ['POST', 'PATCH', 'PUT'].includes(request.method) && url.pathname !== '/v1/auth/logout'
         ? await jsonBody(request, upload ? MAX_UPLOAD_BYTES : MAX_JSON_BYTES) : undefined;
-      const context = { ...session, body, url, ip: clientAddress(request), key: request.headers['idempotency-key'] };
+      const context = { ...session, body, url, ip, key: request.headers['idempotency-key'] };
       const args = match.pattern.exec(url.pathname).slice(1);
       const result = await match.run(context, ...args);
       if (url.pathname === '/v1/billing/zibal/callback' && request.headers.accept?.includes('text/html')) {
@@ -309,7 +347,10 @@ export function createApi(db, {
       respond(response, match.status, result);
     } catch (error) {
       request.resume();
-      if (error instanceof ApiError) return respond(response, error.status, { error: { code: error.message } });
+      if (error instanceof ApiError) {
+        if (error.message === 'api_rate_limited') response.setHeader('Retry-After', '60');
+        return respond(response, error.status, { error: { code: error.message } });
+      }
       if (error.code === '23505') return respond(response, 409, { error: { code: 'duplicate_record' } });
       if (error.code === '22003') return respond(response, 409, { error: { code: 'numeric_limit_reached' } });
       if (['53300', '57014', '57P01', 'ECONNREFUSED'].includes(error.code)) return respond(response, 503, { error: { code: 'server_busy' } });

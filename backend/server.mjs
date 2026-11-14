@@ -16,6 +16,8 @@ async function main(env) {
     const server = createApi(db, {
       ...services,
       maxRequests: envInt(env, 'NOVINO_MAX_REQUESTS', 48, 8, 256),
+      readLimit: envInt(env, 'NOVINO_API_READ_LIMIT', 180, 12, 3000),
+      writeLimit: envInt(env, 'NOVINO_API_WRITE_LIMIT', 60, 6, 1000),
       allowRegistration: env.NOVINO_ALLOW_REGISTRATION === 'true',
       trustLoopbackProxy: env.NOVINO_TRUST_LOOPBACK_PROXY === 'true',
     });

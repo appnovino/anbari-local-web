@@ -33,7 +33,7 @@ export async function transaction(db, run) {
 export async function migrate(db) {
   const migrations = [
     '001_core.sql', '002_workflows.sql', '003_attachments.sql', '004_warehouses.sql', '005_payroll.sql',
-    '006_integrations.sql', '007_report_totals.sql',
+    '006_integrations.sql', '007_report_totals.sql', '008_platform_admins.sql',
   ];
   await transaction(db, async client => {
     await client.query('SELECT pg_advisory_xact_lock(160791237)');
