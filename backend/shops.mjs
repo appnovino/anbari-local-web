@@ -21,6 +21,23 @@ export async function listShops(db, user) {
   return { items };
 }
 
+export async function bankAccount(client, shop, body) {
+  if (body) {
+    const holder = fieldText(body.holderName, 'holder_name', 100);
+    const card = fieldText(body.cardNumber, 'card_number', 40, true)?.replace(/[\s-]/g, '') ?? null;
+    const sheba = fieldText(body.sheba, 'sheba', 40, true)?.replace(/\s/g, '').toUpperCase() ?? null;
+    if ((!card && !sheba) || (card !== null && !/^\d{16}$/.test(card)) ||
+        (sheba !== null && (!/^IR\d{24}$/.test(sheba) ||
+          BigInt(sheba.slice(4) + '1827' + sheba.slice(2, 4)) % 97n !== 1n))) fail(400, 'invalid_bank_account');
+    await client.query(`INSERT INTO shop_bank_accounts(shop_id,holder_name,card_number,sheba) VALUES ($1,$2,$3,$4)
+      ON CONFLICT(shop_id) DO UPDATE SET holder_name=excluded.holder_name,card_number=excluded.card_number,sheba=excluded.sheba`,
+      [shop.id, holder, card, sheba]);
+  }
+  const { rows: [account] } = await client.query(
+    'SELECT holder_name AS "holderName",card_number AS "cardNumber",sheba FROM shop_bank_accounts WHERE shop_id=$1', [shop.id]);
+  return { account: account ?? null };
+}
+
 export async function withShop(db, shopId, user, access, run) {
   async function authorizedShop(client) {
     const { rows: [shop] } = await client.query(

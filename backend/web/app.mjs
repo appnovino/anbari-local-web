@@ -44,6 +44,7 @@ const errors = {
   api_rate_limited: 'تعداد درخواست‌ها زیاد است. یک دقیقه صبر کنید.',
   duplicate_product: 'هر کالا را یک بار وارد کنید و تعداد را در همان قلم بنویسید.',
   duplicate_record: 'کد کالا تکراری است. فایل یا فهرست کالاها را بررسی کنید.',
+  invalid_bank_account: 'شماره کارت یا شبای معتبر وارد کنید.',
   invalid_catalog_import: 'فایل CSV باید یک تا ۱۰۰ ردیف کالا و ستون‌های نام و کد داشته باشد.',
   invalid_report_range: 'بازهٔ گزارش باید معتبر و حداکثر ۳۶۶ روز باشد.',
   platform_admin_required: 'این حساب دسترسی مدیریت سامانه ندارد.',
@@ -705,6 +706,22 @@ async function aiView(shop) {
   }), result);
 }
 
+async function accountView(shop) {
+  const page = panel('حساب من', methods.sms ? smsForm('link') : element('p', {}, 'ورود پیامکی هنوز فعال نیست.'));
+  if (shop.role !== 'owner') return page;
+  const { account: bank } = await shopApi('/bank-account', { onlineOnly: true });
+  page.append(panel('حساب بانکی فروشگاه', shopForm('ذخیره حساب بانکی', [
+    input('holderName', 'نام صاحب حساب', { value: bank?.holderName ?? '', maxlength: '100' }),
+    optional(input('cardNumber', 'شماره کارت', { value: bank?.cardNumber ?? '', inputmode: 'numeric', dir: 'ltr' })),
+    optional(input('sheba', 'شماره شبا', { value: bank?.sheba ?? '', dir: 'ltr' })),
+  ], '/bank-account', values, 'PUT'), bank ? button('حذف حساب بانکی', async () => {
+    if (!confirm('حساب بانکی فروشگاه حذف شود؟')) return;
+    await shopApi('/bank-account', { method: 'DELETE' });
+    await render();
+  }) : null));
+  return page;
+}
+
 const views = [
   ['inventory', 'انبار و گزارش', inventoryView],
   ['documents', 'خرید و فروش', documentsView],
@@ -713,7 +730,7 @@ const views = [
   ['queue', 'صف اسناد', queueView],
   ['billing', 'اشتراک', billingView],
   ['ai', 'پیش‌نویس فاکتور', aiView],
-  ['account', 'حساب من', () => panel('حساب من', methods.sms ? smsForm('link') : element('p', {}, 'ورود پیامکی هنوز فعال نیست.'))],
+  ['account', 'حساب من', accountView],
 ];
 
 async function render() {

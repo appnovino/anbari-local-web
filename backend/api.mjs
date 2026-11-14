@@ -7,7 +7,7 @@ import { postDocument, returnDocument, reverseDocument, summary } from './docume
 import { ApiError, emailAddress, fail, fieldText, identifier } from './input.mjs';
 import { createEmployee, payrollColumns, recordPayroll, reversePayroll } from './payroll.mjs';
 import { takeLimit } from './service-limits.mjs';
-import { addMember, createShop, editCatalog, listShops, removeMember, updateShop, withShop } from './shops.mjs';
+import { addMember, bankAccount, createShop, editCatalog, listShops, removeMember, updateShop, withShop } from './shops.mjs';
 import { assertWarehouses, createWarehouse } from './warehouses.mjs';
 import { chequeColumns, createCheque, createTask, taskColumns, transitionCheque, updateTask } from './workflows.mjs';
 import { serveWeb } from './web.mjs';
@@ -178,6 +178,12 @@ export function createApi(db, {
     ({ id: shop.id, name: shop.name, role: shop.role, revision: shop.revision, pointsPerSale: shop.points_per_sale }));
   shopRoute('PATCH', '', 'owner', (client, shop, { body }) => updateShop(client, shop, body));
   shopRoute('GET', '/sync', 'read', (_client, shop) => ({ revision: shop.revision }));
+  shopRoute('GET', '/bank-account', 'owner', (client, shop) => bankAccount(client, shop));
+  shopRoute('PUT', '/bank-account', 'owner', (client, shop, { body }) => bankAccount(client, shop, body));
+  shopRoute('DELETE', '/bank-account', 'owner', async (client, shop) => {
+    await client.query('DELETE FROM shop_bank_accounts WHERE shop_id=$1', [shop.id]);
+    return { account: null };
+  });
   shopRoute('GET', '/billing', 'owner', async (client, shop) => {
     const { rows: [subscription] } = await client.query(
       'SELECT expires_at AS "expiresAt",expires_at>now() AS active FROM shop_subscriptions WHERE shop_id=$1', [shop.id],

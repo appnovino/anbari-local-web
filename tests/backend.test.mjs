@@ -223,6 +223,13 @@ test('expired sessions cannot read data and removing staff revokes shop access',
   await call(root + '/sync', { token: staff.token, status: 404 });
   const member = await post(root + '/members', { email: staff.user.email, role: 'staff' }, { token: owner.token });
   assert.equal(member.id, staff.user.id);
+  await call(root + '/bank-account', { token: staff.token, status: 403 });
+  await call(root + '/bank-account', { token: owner.token, method: 'PUT', status: 400,
+    body: { holderName: 'Owner', sheba: 'IR000000000000000000000000' } });
+  await call(root + '/bank-account', { token: owner.token, method: 'PUT',
+    body: { holderName: 'Owner', cardNumber: '1234-5678-1234-5678' } });
+  assert.equal((await call(root + '/bank-account', { token: owner.token })).account.cardNumber, '1234567812345678');
+  assert.equal((await call(root + '/bank-account', { token: owner.token, method: 'DELETE' })).account, null);
   await post(root + '/products', { name: 'Created by staff' }, { token: staff.token });
   await call(root + '/members', { token: staff.token, status: 403 });
   await call(root + '/members/' + staff.user.id, { token: owner.token, method: 'DELETE' });
