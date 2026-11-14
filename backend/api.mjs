@@ -88,12 +88,15 @@ export function createApi(db, {
     }
     const read = ['GET', 'HEAD'].includes(method);
     const rate = read ? readLimit : writeLimit;
-    const key = (read ? 'r:' : 'w:') + ip;
-    const entry = traffic.get(key);
-    if (!entry && traffic.size >= 10000) fail(429, 'api_rate_limited');
+    const bucket = read ? 'read' : 'write';
+    const ipEntry = traffic.get(ip) ?? { at: now };
+    if (!traffic.has(ip) && traffic.size >= 20000) fail(429, 'api_rate_limited');
+    const entry = ipEntry[bucket];
     const available = entry ? Math.min(rate, entry.tokens + (now - entry.at) * rate / 60000) : rate;
     if (available < 1) fail(429, 'api_rate_limited');
-    traffic.set(key, { tokens: available - 1, at: now });
+    ipEntry[bucket] = { tokens: available - 1, at: now };
+    ipEntry.at = now;
+    traffic.set(ip, ipEntry);
   }
   function limitAuth(ip) {
     if (Date.now() >= resetAt) {

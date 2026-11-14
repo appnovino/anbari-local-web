@@ -22,14 +22,20 @@ export async function listShops(db, user) {
 }
 
 export async function withShop(db, shopId, user, access, run) {
-  return transaction(db, async client => {
-    // Membership changes take this same lock before updating permissions.
-    if (access !== 'read') await client.query('SELECT id FROM shops WHERE id=$1 FOR UPDATE', [shopId]);
+  async function authorizedShop(client) {
     const { rows: [shop] } = await client.query(
       'SELECT s.*,m.role FROM shops s JOIN memberships m ON m.shop_id=s.id WHERE s.id=$1 AND m.user_id=$2',
       [shopId, user.id],
     );
     if (!shop) fail(404, 'shop_not_found');
+    return shop;
+  }
+  // Read handlers still scope every query to shopId. They do not need BEGIN/COMMIT.
+  if (access === 'read') return run(db, await authorizedShop(db));
+  return transaction(db, async client => {
+    // Membership changes take this same lock before updating permissions.
+    await client.query('SELECT id FROM shops WHERE id=$1 FOR UPDATE', [shopId]);
+    const shop = await authorizedShop(client);
     if (access === 'owner' && shop.role !== 'owner') fail(403, 'owner_required');
     if (access === 'write' && shop.role === 'viewer') fail(403, 'write_access_required');
     return run(client, shop);

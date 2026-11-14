@@ -213,6 +213,27 @@ test('admin access, session revocation and bounded request quota', async t => {
   await Promise.all(replies.map(response => response.arrayBuffer()));
 });
 
+test('expired sessions cannot read data and removing staff revokes shop access', async t => {
+  const { call, post, db } = await fixture(t);
+  const register = email => post('/v1/auth/register', { email, name: 'Account', password: 'fixture-password-2026' });
+  const owner = await register('owner@example.test');
+  const staff = await register('staff@example.test');
+  const shop = await post('/v1/shops', { name: 'Shop' }, { token: owner.token });
+  const root = '/v1/shops/' + shop.id;
+  await call(root + '/sync', { token: staff.token, status: 404 });
+  const member = await post(root + '/members', { email: staff.user.email, role: 'staff' }, { token: owner.token });
+  assert.equal(member.id, staff.user.id);
+  await post(root + '/products', { name: 'Created by staff' }, { token: staff.token });
+  await call(root + '/members', { token: staff.token, status: 403 });
+  await call(root + '/members/' + staff.user.id, { token: owner.token, method: 'DELETE' });
+  await call(root + '/products', { token: staff.token, status: 404 });
+  await call('/v1/me', { token: owner.token, method: 'PATCH', body: { name: 'Updated owner' } });
+  assert.equal((await call('/v1/auth/session', { token: owner.token })).user.name, 'Updated owner');
+  await db.query("UPDATE sessions SET expires_at=now()-interval '1 second' WHERE user_id=$1", [owner.user.id]);
+  await call(root + '/products', { token: owner.token, status: 401 });
+  await post('/v1/auth/login', { email: owner.user.email, password: 'incorrect-password' }, { status: 401 });
+});
+
 test('configured services enforce SMS proof, Zibal reconciliation and AI limits', async t => {
   let code, providerOrder, providerAmount, billing, smsCalls = 0, verifyCalls = 0, bankCalls = 0;
   let providerReady = false;
