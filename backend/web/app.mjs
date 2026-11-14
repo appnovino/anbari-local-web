@@ -29,6 +29,8 @@ const errors = {
   service_limit_reached: 'سقف درخواست پر شده است. بعداً دوباره تلاش کنید.',
   api_rate_limited: 'تعداد درخواست‌ها زیاد است. یک دقیقه صبر کنید.',
   duplicate_product: 'هر کالا را یک بار وارد کنید و تعداد را در همان قلم بنویسید.',
+  duplicate_record: 'کد کالا تکراری است. فایل یا فهرست کالاها را بررسی کنید.',
+  invalid_catalog_import: 'فایل CSV باید یک تا ۱۰۰ ردیف کالا و ستون‌های نام و کد داشته باشد.',
   invalid_report_range: 'بازهٔ گزارش باید معتبر و حداکثر ۳۶۶ روز باشد.',
   platform_admin_required: 'این حساب دسترسی مدیریت سامانه ندارد.',
   insufficient_stock: 'موجودی این انبار کافی نیست.',
@@ -191,6 +193,40 @@ function movementForm(label, fields, products, action, { priced = false, signed 
   });
 }
 
+function parseCatalogCsv(text) {
+  const records = [];
+  let record = [];
+  let field = '';
+  let quoted = false;
+  let closedQuote = false;
+  const source = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+  for (let i = 0; i < source.length; i++) {
+    const char = source[i];
+    if (quoted) {
+      if (char !== '"') field += char;
+      else if (source[i + 1] === '"') { field += '"'; i++; }
+      else { quoted = false; closedQuote = true; }
+    } else if (char === ',' || char === '\n') {
+      record.push(field.trim());
+      field = '';
+      closedQuote = false;
+      if (char === '\n') {
+        if (record.some(Boolean)) records.push(record);
+        record = [];
+      }
+    } else if (char === '"' && !field && !closedQuote) quoted = true;
+    else if (char === '"' || closedQuote) throw new Error('invalid_catalog_import');
+    else field += char;
+  }
+  if (quoted) throw new Error('invalid_catalog_import');
+  record.push(field.trim());
+  if (record.some(Boolean)) records.push(record);
+  const header = records.shift();
+  if (!header || !['نام,کد', 'name,sku'].includes(header.join(',')) || !records.length || records.length > 100 ||
+      records.some(row => row.length !== 2 || !row[0])) throw new Error('invalid_catalog_import');
+  return records.map(([name, sku]) => ({ name, sku: sku || null }));
+}
+
 function smsForm(purpose) {
   const container = element('div');
   const base = '/auth/sms/' + purpose;
@@ -291,6 +327,18 @@ async function inventoryView(shop) {
   });
   if (writable) {
     productPanel.append(creation('/products', 'ثبت کالا', [input('name', 'نام کالا'), optional(input('sku', 'کد کالا'))]));
+    productPanel.append(title('ورود فهرست کالا از CSV', [
+      element('p', {}, 'فایل UTF-8 با ستون‌های «نام،کد» را انتخاب کنید. کد اختیاری است. حداکثر ۱۰۰ کالا در هر فایل.'),
+      form('ثبت کالاهای فایل', [input('catalog', 'فایل CSV', { type: 'file', accept: '.csv,text/csv' })], async (fields, key) => {
+        const file = fields.get('catalog');
+        if (!file.size || file.size > 128 * 1024) throw new Error('invalid_catalog_import');
+        const path = '/shops/' + shopId + '/products/import';
+        const rows = parseCatalogCsv(await file.text());
+        const result = await api(path, post({ rows }, key));
+        await render();
+        message(number.format(result.imported) + ' کالا ثبت شد.');
+      }),
+    ]));
     contactPanel.append(creation('/contacts', 'ثبت طرف حساب', [input('name', 'نام طرف حساب'), optional(input('phone', 'تلفن'))]));
   }
   if (shop.role === 'owner') warehousePanel.append(creation('/warehouses', 'ثبت انبار', [input('name', 'نام انبار')]));

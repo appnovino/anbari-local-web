@@ -35,6 +35,7 @@ NOVINO_TRUST_LOOPBACK_PROXY=false
 - `POST /documents/<id>/attachments` با `name,mediaType,content` که محتوا Base64 است. سقف هر فایل ۲ مگابایت و نوع مجاز PDF، PNG و JPEG است. دانلود و حذف از `/documents/<id>/attachments/<fileId>` با نشست و مجوز همان فروشگاه انجام می‌شود.
 - `GET/POST /payroll/employees`، `GET /payroll/payments` و `POST /payroll/employees/<id>/payments` با `period,earnings,deductions`. `POST /payroll/payments/<id>/reverse` سند اصلاحی می‌سازد. مدیریت حقوق با مالک است. محاسبهٔ مالیات و بیمه جزو این API نیست.
 - `GET /sync` شمارهٔ بازبینی فروشگاه را برای بررسی تغییر از دستگاه دیگر می‌دهد. کلاینت پس از تغییر شماره، منابع مورد نیاز را دوباره می‌خواند. صف آفلاین کلاینت و ارتباط بلادرنگ هنوز پیاده نشده‌اند.
+- ورود کالا از فایل CSV با ستون‌های `نام,کد` یا `name,sku` و رمزگذاری UTF-8 انجام می‌شود. هر فایل حداکثر ۱۰۰ ردیف کالا دارد. `POST /products/import` ردیف‌ها را در یک تراکنش ثبت می‌کند. ثبت دوباره با همان `Idempotency-Key` کالاهای تکراری ایجاد نمی‌کند.
 - `GET /ai/status` وضعیت فعال‌بودن تنظیمات هوش مصنوعی را گزارش می‌کند. `POST /ai/invoices/parse` با `text` پیش‌نویس اقلام را برمی‌گرداند. کاربر بعد از بررسی می‌تواند جداگانه سند ثبت کند.
 
 نمونهٔ بدنهٔ فروش با مقدار کسری و قیمت واحد به تومان

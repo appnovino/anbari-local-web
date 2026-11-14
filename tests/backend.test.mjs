@@ -65,6 +65,12 @@ test('real PostgreSQL API persists tenant-scoped, atomic inventory and accountin
   await post(root + '/members', { email: 'other@example.com', role: 'viewer' }, { token });
   await post(root + '/products', { name: 'Unauthorized' }, { token: outsider.token, status: 403 });
   await call(root + '/products', { token: outsider.token });
+  const importCatalog = (rows, key, status = 201, actor = token) =>
+    post(root + '/products/import', { rows }, { token: actor, key, status });
+  const catalogRows = [{ name: 'Import one', sku: 'IMPORT1' }, { name: 'Import two', sku: 'IMPORT2' }];
+  await importCatalog(catalogRows, 'viewer-import', 403, outsider.token);
+  await importCatalog([{ name: 'Must roll back', sku: 'ROLLBACK' }, { name: 'Duplicate', sku: 'TEA' }], 'import-conflict', 409);
+  assert.equal((await call(root + '/products', { token })).items.length, 1);
   const record = (kind, fields, key, status = 201) => post(root + '/documents', { kind, ...fields }, { token, key, status });
   const lines = (quantity, unitPrice) => [{ productId: product.id, quantity, unitPrice }];
   await record('purchase', { contactId: contact.id, lines: lines(10, 200) }, 'buy');
@@ -170,6 +176,9 @@ test('real PostgreSQL API persists tenant-scoped, atomic inventory and accountin
   await post(root + '/ai/invoices/parse', { text: 'Tea' }, { token, status: 503 });
   await call('/v1/auth/logout', { method: 'POST', token });
   await call(root + '/products', { token, status: 401 });
+  assert.equal((await importCatalog(catalogRows, 'catalog-file', 201, secondDevice.token)).imported, 2);
+  assert.equal((await importCatalog(catalogRows, 'catalog-file', 201, secondDevice.token)).imported, 2);
+  assert.equal((await call(root + '/products', { token: secondDevice.token })).items.length, 3);
 });
 
 test('admin access, session revocation and bounded request quota', async t => {

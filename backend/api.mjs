@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { isIP } from 'node:net';
 import { attachmentColumns, deleteAttachment, readAttachment, uploadAttachment } from './attachments.mjs';
 import { authenticate, changePassword, digest, login, register } from './auth.mjs';
+import { importProducts } from './catalog-import.mjs';
 import { postDocument, returnDocument, reverseDocument, summary } from './documents.mjs';
 import { ApiError, emailAddress, fail, fieldText, identifier } from './input.mjs';
 import { createEmployee, payrollColumns, recordPayroll, reversePayroll } from './payroll.mjs';
@@ -223,6 +224,8 @@ export function createApi(db, {
     shopRoute('PUT', '/' + table + '/([^/]+)', 'write', (client, shop, { body }, id) =>
       editCatalog(client, shop, table, body, identifier(id)));
   }
+  shopRoute('POST', '/products/import', 'write', (client, shop, { user, body, key }) =>
+    importProducts(client, shop, user, body, key), 201);
   shopRoute('GET', '/documents', 'read', (client, shop, { url }) => {
     const contactId = url.searchParams.get('contactId');
     return listed(client,
