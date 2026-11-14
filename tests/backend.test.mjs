@@ -52,6 +52,14 @@ test('real PostgreSQL API persists tenant-scoped, atomic inventory and accountin
   assert.match(await home.text(), /\/app\.mjs/);
   assert.match((await fetch(origin + '/app.mjs')).headers.get('content-type'), /javascript/);
   assert.equal((await fetch(origin + '/backend/.env')).status, 404);
+  assert.equal((await fetch(origin + '/offline.mjs')).status, 200);
+  const shell = await (await fetch(origin + '/sw.js')).text();
+  assert.match(shell, /novino-shell-[a-f0-9]{64}/);
+  assert.doesNotMatch(shell, /['"]\/v1\//);
+  const crossSite = await fetch(origin + '/v1/auth/login', {
+    method: 'POST', headers: { 'Sec-Fetch-Site': 'cross-site', 'Content-Type': 'application/json' }, body: '{}',
+  });
+  assert.equal(crossSite.status, 403);
   const password = 'a-local-test-password';
   const owner = await post('/v1/auth/register', { email: 'owner@example.com', name: 'Owner', password });
   const outsider = await post('/v1/auth/register', { email: 'other@example.com', name: 'Other', password });

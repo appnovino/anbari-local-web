@@ -325,6 +325,8 @@ export function createApi(db, {
     try {
       const url = new URL(request.url, 'http://localhost');
       if (serveWeb(request, response, url.pathname)) return;
+      if (url.pathname.startsWith('/v1/') && !['GET', 'HEAD'].includes(request.method) &&
+          request.headers['sec-fetch-site'] === 'cross-site') fail(403, 'cross_site_request');
       const ip = clientAddress(request);
       if (url.pathname.startsWith('/v1/')) limitApi(ip, request.method);
       const match = routes.find(candidate => candidate.method === request.method && candidate.pattern.test(url.pathname));

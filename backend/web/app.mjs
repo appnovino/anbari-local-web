@@ -1,3 +1,5 @@
+import { saveSnapshot, readSnapshot, queueDocument, queuedDocuments, rejectDocument, dropDocument } from './offline.mjs';
+
 const root = document.querySelector('#app');
 const notice = document.querySelector('#message');
 const sessionKey = 'novino.session';
@@ -7,10 +9,22 @@ const date = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' });
 const paymentId = new URLSearchParams(location.search).get('payment');
 const adminPage = location.pathname === '/admin';
 let token = sessionStorage.getItem(sessionKey);
+let account = sessionStorage.getItem('novino.account');
 let shopId = sessionStorage.getItem(shopKey);
 let methods;
 let view = paymentId ? 'billing' : 'inventory';
 let renderVersion = 0;
+let syncing = false;
+const syncStatus = document.createElement('p');
+syncStatus.setAttribute('role', 'status');
+syncStatus.hidden = true;
+root.before(syncStatus);
+
+function updateConnection() {
+  syncStatus.hidden = navigator.onLine;
+  syncStatus.textContent = navigator.onLine ? '' :
+    'آفلاین · اطلاعات آخرین دریافت نمایش داده می‌شود. اسناد در صف تا تأیید سرور در گزارش نمی‌آیند.';
+}
 
 const statusLabels = {
   creating: 'در حال ساخت سفارش', pending: 'در انتظار تأیید', paid: 'تأییدشده',
@@ -38,6 +52,8 @@ const errors = {
   server_busy: 'سرویس مشغول است. کمی بعد دوباره تلاش کنید.',
   payment_not_found: 'این سفارش در فروشگاه انتخاب‌شده پیدا نشد.',
   intelligence_response_invalid: 'خروجی قابل استفاده‌ای از سرویس هوش مصنوعی دریافت نشد.',
+  online_required: 'این بخش به اتصال اینترنت نیاز دارد یا قبلاً روی این دستگاه باز نشده است.',
+  offline_queue_full: 'صف ارسال پر است. برای ادامه به اینترنت وصل شوید و وضعیت صف را بررسی کنید.',
 };
 
 function element(tag, attributes = {}, ...children) {
@@ -54,14 +70,32 @@ function message(text, error = false) {
 function displayError(error) {
   message(errors[error.message] ?? 'درخواست انجام نشد. ورودی را بررسی کنید و دوباره تلاش کنید.', true);
 }
-async function api(path, { method = 'GET', body, key } = {}) {
+function canCache(path) {
+  return /^\/(auth\/(methods|session)|shops)$/.test(path) ||
+    /^\/shops\/[0-9a-f-]{36}(?:\/(products|contacts|warehouses|documents(?:\/[0-9a-f-]{36})?|reports\/summary|cheques|reminders|shopping-list))?$/.test(path);
+}
+
+async function api(path, { method = 'GET', body, key, onlineOnly = false } = {}) {
+  const currentAccount = !adminPage && !onlineOnly && method === 'GET' && canCache(path) && account;
+  async function cached() {
+    if (currentAccount) {
+      const value = await readSnapshot(currentAccount, path).catch(() => undefined);
+      if (value !== undefined && currentAccount === account) return value;
+    }
+    throw new Error('online_required');
+  }
+  if (!navigator.onLine) return cached();
   const headers = { Accept: 'application/json' };
   if (token) headers.Authorization = 'Bearer ' + token;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
   if (key) headers['Idempotency-Key'] = key;
-  const response = await fetch('/v1' + path, {
-    method, headers, body: JSON.stringify(body), cache: 'no-store',
-  });
+  let response;
+  try {
+    response = await fetch('/v1' + path, {
+      method, headers, body: JSON.stringify(body), cache: 'no-store',
+      credentials: 'same-origin', redirect: 'error', signal: AbortSignal.timeout(20000),
+    });
+  } catch { return cached(); }
   const data = await response.json();
   if (!response.ok) {
     const code = data.error?.code ?? 'request_failed';
@@ -69,7 +103,12 @@ async function api(path, { method = 'GET', body, key } = {}) {
       remember(null);
       void render();
     }
-    throw new Error(code);
+    const error = new Error(code);
+    error.status = response.status;
+    throw error;
+  }
+  if (currentAccount && currentAccount === account) {
+    await saveSnapshot(currentAccount, path, data).catch(() => {});
   }
   return data;
 }
@@ -77,12 +116,69 @@ const shopApi = (path, options) => api('/shops/' + shopId + path, options);
 const post = (body, key) => ({ method: 'POST', body, key });
 function remember(value) {
   token = value;
+  account = null;
+  sessionStorage.removeItem('novino.account');
   if (value) sessionStorage.setItem(sessionKey, value);
   else {
     sessionStorage.removeItem(sessionKey);
     sessionStorage.removeItem(shopKey);
     shopId = null;
   }
+}
+
+async function syncDocuments() {
+  if (!account || !token || !navigator.onLine || syncing) return;
+  const owner = account;
+  const session = token;
+  syncing = true;
+  try {
+    const blocked = new Set();
+    for (const item of await queuedDocuments(owner)) {
+      const shop = item.path.split('/')[2];
+      if (item.state === 'rejected') blocked.add(shop);
+      if (blocked.has(shop)) continue;
+      if (account !== owner || token !== session || !navigator.onLine) return;
+      try {
+        await api(item.path, post(item.body, item.key));
+        await dropDocument(owner, item.key);
+      } catch (error) {
+        if (!error.status || ![400, 403, 404, 409, 422].includes(error.status)) return;
+        await rejectDocument(owner, item, error.message);
+        blocked.add(shop);
+      }
+    }
+  } finally { syncing = false; }
+}
+
+async function submitDocument(path, body, key) {
+  const owner = account;
+  if (!owner) throw new Error('online_required');
+  const existing = await queuedDocuments(owner);
+  if (existing.length >= 100) throw new Error('offline_queue_full');
+  if (!existing.some(item => item.key === key)) await queueDocument(owner, key, '/shops/' + shopId + path, body);
+  await syncDocuments();
+  const item = (await queuedDocuments(owner)).find(row => row.key === key);
+  await render();
+  if (item?.state === 'rejected') displayError(new Error(item.error));
+  else message(item ? 'سند روی این دستگاه ذخیره شد و در صف ارسال است.' : 'سند ثبت شد.');
+}
+
+async function queueView() {
+  const owner = account;
+  const items = (await queuedDocuments(owner)).filter(item => item.path.startsWith('/shops/' + shopId + '/documents'));
+  return panel('صف اسناد', button('ارسال اسناد در انتظار', async () => { await syncDocuments(); await render(); }),
+    table(['نوع', 'زمان ثبت محلی', 'وضعیت', 'جزئیات'], items.map(item => [
+      kinds[item.body.kind] ?? 'برگشت', date.format(new Date(item.createdAt)),
+      item.state === 'pending' ? 'در انتظار ارسال' : (errors[item.error] ?? 'سرور سند را نپذیرفت'),
+      element('details', {}, element('summary', {}, 'مشاهده'),
+        element('p', {}, (item.body.lines?.length ?? 0) + ' قلم'),
+        item.body.note ? element('p', {}, item.body.note) : null,
+        item.state === 'rejected' ? button('حذف سند ردشده', async () => {
+          if (!confirm('این سند ردشده از صف حذف شود؟')) return;
+          await dropDocument(owner, item.key);
+          await render();
+        }) : null),
+    ])));
 }
 function chooseShop(id) {
   shopId = id;
@@ -384,9 +480,7 @@ async function documentsView(shop) {
     optional(select('contactId', 'طرف حساب', options(contacts.items), 'بدون طرف حساب')),
     optional(input('note', 'توضیح سند')),
   ], products.items, async ({ contactId, ...fields }, lines, key) => {
-    await shopApi('/documents', post({ ...fields, contactId: contactId || null, lines }, key));
-    await render();
-    message('سند ثبت شد.');
+    await submitDocument('/documents', { ...fields, contactId: contactId || null, lines }, key);
   }, { priced: true }) : null;
   const simple = shopForm('ثبت سند', [
     select('kind', 'نوع عملیات', [['receipt', 'دریافت'], ['payment', 'پرداخت'], ['expense', 'هزینه'], ['redemption', 'مصرف امتیاز']]),
@@ -398,8 +492,7 @@ async function documentsView(shop) {
       [kind === 'redemption' ? 'points' : 'amount']: Number(value) };
   });
   const saveMovement = kind => async (fields, lines, key) => {
-    await shopApi('/documents', post({ ...fields, kind, lines }, key));
-    await render();
+    await submitDocument('/documents', { ...fields, kind, lines }, key);
   };
   const transfer = warehouses.items.length > 1 && products.items.length ? movementForm('انتقال کالا', [
     select('fromWarehouseId', 'از انبار', options(warehouses.items)),
@@ -479,8 +572,7 @@ async function documentDetails(id, products, writable) {
     documentPanel.append(title('برگشت کالا', [movementForm('ثبت برگشت', [
       optional(input('note', 'توضیح برگشت')),
     ], eligible, async (fields, lines, key) => {
-      await shopApi(path + '/returns', post({ ...fields, lines }, key));
-      await render();
+      await submitDocument(path + '/returns', { ...fields, lines }, key);
     })]));
   }
   if (!['reversal', 'purchase-return', 'sale-return'].includes(doc.kind)) {
@@ -618,6 +710,7 @@ const views = [
   ['documents', 'خرید و فروش', documentsView],
   ['operations', 'چک و پیگیری', operationsView],
   ['team', 'تیم و حقوق', teamView],
+  ['queue', 'صف اسناد', queueView],
   ['billing', 'اشتراک', billingView],
   ['ai', 'پیش‌نویس فاکتور', aiView],
   ['account', 'حساب من', () => panel('حساب من', methods.sms ? smsForm('link') : element('p', {}, 'ورود پیامکی هنوز فعال نیست.'))],
@@ -640,7 +733,17 @@ async function render() {
       if (current()) root.replaceChildren(page);
       return;
     }
-    const [{ user }, { items: shops }] = await Promise.all([api('/auth/session'), api('/shops')]);
+    const session = await api('/auth/session');
+    const { user } = session;
+    if (!current()) return;
+    const firstSession = account !== user.id;
+    account = user.id;
+    sessionStorage.setItem('novino.account', account);
+    if (navigator.onLine && firstSession) {
+      await saveSnapshot(account, '/auth/session', session).catch(() => {});
+    }
+    if (firstSession) await saveSnapshot(account, '/auth/methods', methods).catch(() => {});
+    const { items: shops } = await api('/shops');
     if (!current()) return;
     const shop = shops.find(item => item.id === shopId) ?? shops[0];
     const create = panel('فروشگاه جدید', form('ایجاد فروشگاه', [input('name', 'نام فروشگاه')], async fields => {
@@ -658,7 +761,9 @@ async function render() {
     const switcher = select('shop', 'فروشگاه', options(shops));
     switcher.lastElementChild.value = shop.id;
     switcher.addEventListener('change', async event => { chooseShop(event.target.value); await render(); });
-    const available = views.filter(([id]) => id !== 'team' || shop.role === 'owner');
+    const offlineViews = ['inventory', 'documents', 'operations', 'queue'];
+    const available = views.filter(([id]) => (id !== 'team' || shop.role === 'owner') &&
+      (navigator.onLine || offlineViews.includes(id)));
     if (!available.some(([id]) => id === view)) view = 'inventory';
     const navigation = element('nav', { 'aria-label': 'بخش‌های نووینو' }, ...available.map(([id, label]) =>
       button(label, async () => { view = id; await render(); }, id === view ? { 'aria-current': 'page' } : {})));
@@ -682,4 +787,15 @@ async function render() {
   } finally { if (current()) root.inert = false; }
 }
 
-void render();
+updateConnection();
+window.addEventListener('offline', updateConnection);
+window.addEventListener('online', async () => {
+  updateConnection();
+  try { await syncDocuments(); }
+  catch (error) { displayError(error); }
+  if (view === 'queue') await render();
+});
+if (!adminPage && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+void render().then(() => { if (!adminPage) return syncDocuments(); }).catch(displayError);
