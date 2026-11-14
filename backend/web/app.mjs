@@ -423,6 +423,22 @@ async function documentDetails(id, products, writable) {
   const documentPanel = panel(kinds[doc.kind] ?? 'جزئیات سند', doc.note ? element('p', {}, doc.note) : null,
     table(['کالا', 'گردش موجودی', 'قیمت واحد به تومان'], doc.movements.map(row =>
       [productName(row.productId), number.format(row.quantity), money(row.unitPrice)])));
+  const printSheet = element('article', { class: 'print-document' },
+    element('h1', {}, kinds[doc.kind] ?? 'سند نووینو'),
+    element('p', {}, 'تاریخ ثبت ' + date.format(new Date(doc.createdAt))),
+    element('p', {}, 'شناسهٔ سند ' + doc.id),
+    doc.note ? element('p', {}, doc.note) : null,
+    doc.movements.length ? table(['کالا', 'تعداد', 'قیمت واحد به تومان'], doc.movements.map(row =>
+      [productName(row.productId), number.format(Math.abs(Number(row.quantity))), money(row.unitPrice)])) : null,
+    element('p', {}, 'مبلغ کل ' + money(doc.amount) + ' تومان'));
+  documentPanel.append(button('چاپ یا ذخیرهٔ PDF', () => {
+    document.body.append(printSheet);
+    document.body.classList.add('printing-document');
+    try { window.print(); } finally {
+      document.body.classList.remove('printing-document');
+      printSheet.remove();
+    }
+  }));
   const attachments = table(['پیوست', 'دانلود', 'حذف'], doc.attachments.map(file => {
     const url = path + '/attachments/' + file.id;
     const download = button('دانلود', async () => {
