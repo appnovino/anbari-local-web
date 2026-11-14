@@ -4,6 +4,8 @@ import { createHash } from 'node:crypto';
 const assets = new Map([
   ['/', ['index.html', 'text/html; charset=utf-8']],
   ['/admin', ['index.html', 'text/html; charset=utf-8']],
+  ['/terms', ['terms.html', 'text/html; charset=utf-8']],
+  ['/privacy', ['privacy.html', 'text/html; charset=utf-8']],
   ['/app.mjs', ['app.mjs', 'text/javascript; charset=utf-8']],
   ['/app.css', ['app.css', 'text/css; charset=utf-8']],
   ['/offline.mjs', ['offline.mjs', 'text/javascript; charset=utf-8']],
@@ -26,6 +28,7 @@ export function serveWeb(request, response, path) {
     'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; worker-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
     'Referrer-Policy': 'no-referrer',
     'X-Content-Type-Options': 'nosniff',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
   });
   response.end(request.method === 'HEAD' ? undefined : asset.body);
   return true;

@@ -22,9 +22,10 @@ export function createSms(db, provider, { secret, dailyLimit }) {
         await takeLimit(db, 'sms-account', user.id, 3600, 4);
         await passwordUser(db, user.email, body.password);
       }
-      const { rows: [existing] } = await db.query('SELECT id FROM users WHERE phone=$1', [phone]);
+      const { rows: [existing] } = await db.query(`SELECT u.id, a.user_id IS NOT NULL AS admin
+        FROM users u LEFT JOIN platform_admins a ON a.user_id=u.id WHERE u.phone=$1`, [phone]);
       const challengeId = randomUUID();
-      if (purpose === 'login' && !existing) return { challengeId, expiresIn: 300 };
+      if (purpose === 'login' && (!existing || existing.admin)) return { challengeId, expiresIn: 300 };
       if (purpose === 'link' && existing && existing.id !== user.id) fail(409, 'phone_in_use');
       await takeLimit(db, 'sms-global', 'all', 86400, dailyLimit);
       const code = String(randomInt(100000, 1000000));
@@ -35,7 +36,7 @@ export function createSms(db, provider, { secret, dailyLimit }) {
       );
       if (!await provider.sendCode(phone, code)) {
         await db.query('DELETE FROM sms_challenges WHERE id=$1', [challengeId]);
-        fail(502, 'sms_send_unavailable');
+        if (purpose === 'link') fail(502, 'sms_send_unavailable');
       }
       return { challengeId, expiresIn: 300 };
     },
@@ -57,7 +58,8 @@ export function createSms(db, provider, { secret, dailyLimit }) {
           await client.query("UPDATE sms_challenges SET consumed=true WHERE user_id=$1 AND purpose='link' AND NOT consumed", [user.id]);
           return { phone: challenge.phone };
         }
-        const { rows: [account] } = await client.query('SELECT id,email,name FROM users WHERE id=$1 AND phone=$2 FOR UPDATE',
+        const { rows: [account] } = await client.query(`SELECT id,email,name FROM users WHERE id=$1 AND phone=$2
+          AND NOT EXISTS (SELECT 1 FROM platform_admins WHERE user_id=users.id) FOR UPDATE`,
           [challenge.user_id, challenge.phone]);
         return account ? createSession(client, account) : null;
       });

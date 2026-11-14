@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
+import { connect as tcpConnect } from 'node:net';
 import { randomUUID } from 'node:crypto';
 import { test } from 'node:test';
 import { Pool } from 'pg';
 import { migrate } from '../backend/database.mjs';
 import { createApi } from '../backend/api.mjs';
+import { integrations } from '../backend/config.mjs';
 import { createBilling } from '../backend/billing.mjs';
 import { createSms } from '../backend/sms.mjs';
 import { createKavenegar, createOpenAI, createZibal } from '../backend/providers.mjs';
@@ -31,7 +33,7 @@ async function fixture(t, services = () => ({})) {
   await once(server, 'listening');
   const origin = 'http://127.0.0.1:' + server.address().port;
   async function call(path, { method = 'GET', body, token, key, status = 200 } = {}) {
-    const headers = {};
+      const headers = {};
     if (token) headers.authorization = 'Bearer ' + token;
     if (key) headers['idempotency-key'] = key;
     if (body !== undefined) headers['content-type'] = 'application/json';
@@ -239,6 +241,42 @@ test('expired sessions cannot read data and removing staff revokes shop access',
   await db.query("UPDATE sessions SET expires_at=now()-interval '1 second' WHERE user_id=$1", [owner.user.id]);
   await call(root + '/products', { token: owner.token, status: 401 });
   await post('/v1/auth/login', { email: owner.user.email, password: 'incorrect-password' }, { status: 401 });
+});
+
+test('slow client cannot occupy all request slots and login quota is isolated per IP', async t => {
+  const { post, origin } = await fixture(t, () => ({ maxRequests: 2, trustLoopbackProxy: true }));
+  const address = new URL(origin);
+  const socket = tcpConnect(Number(address.port), address.hostname);
+  t.after(() => socket.destroy());
+  await once(socket, 'connect');
+  socket.write('POST /v1/auth/login HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: 100\r\n\r\n{');
+  try {
+    await new Promise(resolve => setTimeout(resolve, 30));
+    assert.equal((await fetch(origin + '/v1/auth/methods')).status, 429);
+    assert.equal((await fetch(origin + '/')).status, 200);
+    assert.equal((await fetch(origin + '/v1/auth/methods', { headers: { 'X-Real-IP': '198.18.0.2' } })).status, 200);
+  } finally {
+    const closed = once(socket, 'close');
+    socket.destroy();
+    await closed;
+  }
+  const email = 'login-victim@example.test';
+  const password = 'correct-fixture-password';
+  const registration = await fetch(origin + '/v1/auth/register', {
+    method: 'POST', headers: { 'X-Real-IP': '198.18.0.3', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, name: 'Victim' }),
+  });
+  assert.equal(registration.status, 201);
+  const login = (ip, value) => fetch(origin + '/v1/auth/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Real-IP': ip },
+    body: JSON.stringify({ email, password: value }),
+  });
+  for (let i = 0; i < 12; i++) assert.equal((await login('198.18.0.1', 'invalid-fixture-password')).status, 401);
+  assert.equal((await login('198.18.0.1', 'invalid-fixture-password')).status, 429);
+  assert.equal((await login('198.18.0.2', password)).status, 200);
+  assert.throws(() => integrations(null, {
+    NOVINO_ZIBAL_ENABLED: 'true', NOVINO_PUBLIC_ORIGIN: 'https://novino.app', ZIBAL_MERCHANT: 'zibal',
+  }), /Invalid ZIBAL_MERCHANT/);
 });
 
 test('configured services enforce SMS proof, Zibal reconciliation and AI limits', async t => {

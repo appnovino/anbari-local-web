@@ -1,8 +1,8 @@
 {
-  "name": "anbari-local-web",
+  "name": "novino",
   "private": true,
   "version": "0.1.0",
-  "description": "Local browser runtime for the recovered myAnbari frontend",
+  "description": "Novino inventory and accounting web app",
   "scripts": {
     "build": "node tools/build-local-web.mjs",
     "start": "node tools/build-local-web.mjs && python tools/serve-web.py --port 5173",

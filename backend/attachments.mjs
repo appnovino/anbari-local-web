@@ -28,6 +28,10 @@ export function uploadAttachment(client, shop, user, documentId, body, key) {
       'SELECT count(*)::int AS total FROM attachments WHERE shop_id=$1 AND document_id=$2', [shop.id, documentId],
     );
     if (count.total >= 10) fail(409, 'attachment_limit_reached');
+    const { rows: [usage] } = await client.query(
+      'SELECT coalesce(sum(octet_length(content)),0) AS bytes FROM attachments WHERE shop_id=$1', [shop.id],
+    );
+    if (Number(usage.bytes) + content.length > 100 * 1024 * 1024) fail(409, 'shop_attachment_quota');
     const { rows: [attachment] } = await client.query(
       `INSERT INTO attachments(shop_id,document_id,id,name,media_type,content)
        VALUES($1,$2,$3,$4,$5,$6) RETURNING ${attachmentColumns}`,

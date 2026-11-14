@@ -1,4 +1,4 @@
-import { saveSnapshot, readSnapshot, queueDocument, queuedDocuments, rejectDocument, dropDocument } from './offline.mjs';
+import { saveSnapshot, readSnapshot, clearSnapshots, queueDocument, queuedDocuments, rejectDocument, dropDocument } from './offline.mjs';
 
 const root = document.querySelector('#app');
 const notice = document.querySelector('#message');
@@ -44,6 +44,7 @@ const errors = {
   api_rate_limited: 'تعداد درخواست‌ها زیاد است. یک دقیقه صبر کنید.',
   duplicate_product: 'هر کالا را یک بار وارد کنید و تعداد را در همان قلم بنویسید.',
   duplicate_record: 'کد کالا تکراری است. فایل یا فهرست کالاها را بررسی کنید.',
+  shop_attachment_quota: 'فضای پیوست فروشگاه پر است.',
   invalid_bank_account: 'شماره کارت یا شبای معتبر وارد کنید.',
   invalid_catalog_import: 'فایل CSV باید یک تا ۱۰۰ ردیف کالا و ستون‌های نام و کد داشته باشد.',
   invalid_report_range: 'بازهٔ گزارش باید معتبر و حداکثر ۳۶۶ روز باشد.',
@@ -116,6 +117,7 @@ async function api(path, { method = 'GET', body, key, onlineOnly = false } = {})
 const shopApi = (path, options) => api('/shops/' + shopId + path, options);
 const post = (body, key) => ({ method: 'POST', body, key });
 function remember(value) {
+  if (!value && account) void clearSnapshots(account).catch(() => {});
   token = value;
   account = null;
   sessionStorage.removeItem('novino.account');

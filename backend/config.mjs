@@ -27,7 +27,9 @@ export function integrations(db, env) {
     let url;
     try { url = new URL(origin); } catch { throw new Error('Invalid NOVINO_PUBLIC_ORIGIN'); }
     if (url.protocol !== 'https:' || url.origin !== origin.replace(/\/$/, '')) throw new Error('Invalid NOVINO_PUBLIC_ORIGIN');
-    billing = createBilling(db, createZibal(required(env, 'ZIBAL_MERCHANT')), {
+    const merchant = required(env, 'ZIBAL_MERCHANT');
+    if (merchant.toLowerCase() === 'zibal') throw new Error('Invalid ZIBAL_MERCHANT');
+    billing = createBilling(db, createZibal(merchant), {
       origin: url.origin, amountRial: envInt(env, 'NOVINO_PLAN_AMOUNT_RIAL', null, 1001, 1e12),
       durationDays: envInt(env, 'NOVINO_PLAN_DURATION_DAYS', 30, 1, 365),
     });

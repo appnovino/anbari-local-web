@@ -77,6 +77,7 @@ export function createApi(db, {
   let pendingAuth = 0;
   let pendingAI = 0;
   let pendingRequests = 0;
+  const inFlight = new Map();
   let pendingUploads = 0;
   const traffic = new Map();
   let nextSweep = 0;
@@ -132,7 +133,7 @@ export function createApi(db, {
     return authAttempt(ip, () => register(db, body));
   }, { publicRoute: true, status: 201 });
   route('POST', '/v1/auth/login', ({ body, ip }) => authAttempt(ip, async () => {
-    await takeLimit(db, 'password-account', digest(emailAddress(body.email)), 900, 12);
+    await takeLimit(db, 'password-account-ip', digest(JSON.stringify([emailAddress(body.email), ip])), 900, 12);
     return login(db, body);
   }), { publicRoute: true });
   route('GET', '/v1/auth/methods', () => ({ password: true, sms: Boolean(sms), registration: allowRegistration }), { publicRoute: true });
@@ -319,18 +320,15 @@ export function createApi(db, {
     pendingAI++;
     try {
       await takeLimit(db, 'ai-shop', shopId, 86400, intelligence.dailyLimit ?? 10);
+      await takeLimit(db, 'ai-account', user.id, 86400, intelligence.dailyLimit ?? 10);
       await takeLimit(db, 'ai-global', 'all', 86400, intelligence.globalDailyLimit ?? 100);
       return { draft: await intelligence.parseInvoice({ shopId, userId: user.id, text: input }) };
     } finally { pendingAI--; }
   }, { status: 201 });
 
   const server = createServer({ requestTimeout: 20000, headersTimeout: 10000, connectionsCheckingInterval: 1000 }, async (request, response) => {
-    if (pendingRequests >= maxRequests) {
-      request.resume();
-      return respond(response, 503, { error: { code: 'server_busy' } });
-    }
-    pendingRequests++;
     let upload = false;
+    let admitted;
     try {
       const url = new URL(request.url, 'http://localhost');
       if (serveWeb(request, response, url.pathname)) return;
@@ -340,6 +338,14 @@ export function createApi(db, {
       if (url.pathname.startsWith('/v1/')) limitApi(ip, request.method);
       const match = routes.find(candidate => candidate.method === request.method && candidate.pattern.test(url.pathname));
       if (!match) fail(404, 'route_not_found');
+      if (url.pathname !== '/healthz') {
+        const count = inFlight.get(ip) ?? 0;
+        if (count >= Math.min(8, Math.max(1, Math.floor(maxRequests / 2)))) fail(429, 'api_rate_limited');
+        if (pendingRequests >= maxRequests) fail(503, 'server_busy');
+        inFlight.set(ip, count + 1);
+        admitted = ip;
+        pendingRequests++;
+      }
       const session = match.publicRoute ? {} : await authenticate(db, request.headers.authorization);
       if (request.method === 'POST' && url.pathname.endsWith('/attachments')) {
         if (pendingUploads >= 4) fail(429, 'uploads_busy');
@@ -361,6 +367,7 @@ export function createApi(db, {
       }
       respond(response, match.status, result);
     } catch (error) {
+      if (response.destroyed || request.aborted) return;
       request.resume();
       if (error instanceof ApiError) {
         if (error.message === 'api_rate_limited') response.setHeader('Retry-After', '60');
@@ -372,7 +379,12 @@ export function createApi(db, {
       console.error('Novino request failed', { code: error.code ?? 'unexpected' });
       respond(response, 500, { error: { code: 'internal_error' } });
     } finally {
-      pendingRequests--;
+      if (admitted !== undefined) {
+        const remaining = inFlight.get(admitted) - 1;
+        if (remaining) inFlight.set(admitted, remaining);
+        else inFlight.delete(admitted);
+        pendingRequests--;
+      }
       if (upload) pendingUploads--;
     }
   });

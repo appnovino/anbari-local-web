@@ -11,6 +11,8 @@ header { background: #103d34; color: #fff; padding: 1rem max(1.1rem, calc((100vw
 header strong { font-size: 1.45rem; }
 header span { color: #d9eae3; }
 main { max-width: 72rem; padding: 1.25rem; margin: auto; }
+footer { max-width: 72rem; padding: 0 1.25rem 1.25rem; margin: auto; }
+footer a { color: #165445; }
 h1, h2, h3 { line-height: 1.3; margin-block: 0 .8rem; }
 .row, nav { display: flex; align-items: end; flex-wrap: wrap; gap: .65rem; }
 nav { margin-block: 1rem; }

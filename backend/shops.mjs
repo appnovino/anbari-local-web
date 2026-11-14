@@ -6,6 +6,10 @@ export async function createShop(db, user, body) {
   const id = randomUUID();
   const name = fieldText(body.name, 'name', 120);
   return transaction(db, async client => {
+    await client.query('SELECT id FROM users WHERE id=$1 FOR UPDATE', [user.id]);
+    const { rows: [owned] } = await client.query(
+      "SELECT count(*)::int AS total FROM memberships WHERE user_id=$1 AND role='owner'", [user.id]);
+    if (owned.total >= 10) fail(409, 'shop_limit_reached');
     await client.query('INSERT INTO shops(id,name) VALUES ($1,$2)', [id, name]);
     await client.query('INSERT INTO warehouses(shop_id,id,name) VALUES ($1,$1,$2)', [id, 'انبار اصلی']);
     await client.query("INSERT INTO memberships(shop_id,user_id,role) VALUES ($1,$2,'owner')", [id, user.id]);
@@ -49,6 +53,9 @@ export async function withShop(db, shopId, user, access, run) {
   }
   // Read handlers still scope every query to shopId. They do not need BEGIN/COMMIT.
   if (access === 'read') return run(db, await authorizedShop(db));
+  const initial = await authorizedShop(db);
+  if (access === 'owner' && initial.role !== 'owner') fail(403, 'owner_required');
+  if (access === 'write' && initial.role === 'viewer') fail(403, 'write_access_required');
   return transaction(db, async client => {
     // Membership changes take this same lock before updating permissions.
     await client.query('SELECT id FROM shops WHERE id=$1 FOR UPDATE', [shopId]);

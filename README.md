@@ -1,4 +1,4 @@
-# Anbari Local Web
+# Novino | نووینو
 
 ## Novino web app and backend
 

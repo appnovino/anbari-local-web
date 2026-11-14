@@ -73,6 +73,20 @@ export async function readSnapshot(account, path) {
   } catch { return undefined; }
 }
 
+export function clearSnapshots(account) {
+  const prefix = JSON.stringify([account]).slice(0, -1) + ',';
+  return access('data', 'readwrite', store => {
+    const request = store.openKeyCursor(IDBKeyRange.bound(prefix, prefix + '\uffff'));
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (!cursor) return;
+      store.delete(cursor.primaryKey);
+      cursor.continue();
+    };
+    return request;
+  });
+}
+
 export async function queueDocument(account, key, path, body) {
   const id = contextId(account);
   const sealed = await encrypt(account, pendingId(id, key), { path, body, createdAt: Date.now(), state: 'pending' });
