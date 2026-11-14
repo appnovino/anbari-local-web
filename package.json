@@ -6,7 +6,12 @@
   "scripts": {
     "build": "node tools/build-local-web.mjs",
     "start": "node tools/build-local-web.mjs && python tools/serve-web.py --port 5173",
+    "start:backend": "node --env-file-if-exists=backend/.env backend/server.mjs",
+    "test:backend": "node --test tests/backend.test.mjs",
     "test": "node --test tests/local-runtime.test.mjs",
     "verify": "node tools/verify-local-build.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
   }
 }

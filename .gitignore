@@ -1,9 +1,12 @@
 # Only the files needed to build and run the local web project.
 /*
 !/.gitignore
+!/.github/
 !/README.md
 !/LOCAL-WEB-fa.md
 !/package.json
+!/package-lock.json
+!/backend/
 !/start-local-web.cmd
 !/local-web-src/
 !/local-web-assets/
@@ -37,3 +40,4 @@
 **/.env.*
 **/*.pem
 **/*.key
+**/api.env

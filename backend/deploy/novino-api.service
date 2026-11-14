@@ -1,0 +1,31 @@
+[Unit]
+Description=Novino API
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=novino
+Group=novino
+WorkingDirectory=/opt/novino
+EnvironmentFile=/etc/novino/api.env
+ExecStart=/usr/bin/node /opt/novino/backend/server.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+UMask=0077
+MemoryHigh=384M
+MemoryMax=512M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,55 @@
+name: Novino CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: novino
+          POSTGRES_PASSWORD: ci-test-only
+          POSTGRES_DB: novino_test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd "pg_isready -U novino -d novino_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm run verify
+      - run: npm run test:backend
+        env:
+          NOVINO_TEST_DATABASE_URL: postgresql://novino:ci-test-only@127.0.0.1:${{ job.services.postgres.ports[5432] }}/novino_test
+      - name: Package VPS release
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git archive --format=tar.gz --output=novino-vps.tar.gz HEAD backend package.json package-lock.json
+          sha256sum novino-vps.tar.gz > novino-vps.tar.gz.sha256
+      - uses: actions/upload-artifact@v7
+        if: github.ref == 'refs/heads/main'
+        with:
+          name: novino-vps-${{ github.sha }}
+          path: |
+            novino-vps.tar.gz
+            novino-vps.tar.gz.sha256
+          if-no-files-found: error

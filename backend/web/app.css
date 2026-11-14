@@ -1,0 +1,31 @@
+:root {
+  color-scheme: light;
+  font-family: Tahoma, system-ui, sans-serif;
+  background: #f4f7f6;
+  color: #122f29;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; line-height: 1.65; }
+header { background: #103d34; color: #fff; padding: 1rem max(1.1rem, calc((100vw - 70rem) / 2)); display: flex; align-items: center; gap: 1rem; }
+header strong { font-size: 1.45rem; }
+header span { color: #d9eae3; }
+main { max-width: 72rem; padding: 1.25rem; margin: auto; }
+h1, h2, h3 { line-height: 1.3; margin-block: 0 .8rem; }
+.row, nav { display: flex; align-items: end; flex-wrap: wrap; gap: .65rem; }
+nav { margin-block: 1rem; }
+section { background: #fff; border: 1px solid #d9e4df; border-radius: .9rem; padding: 1.15rem; margin-block: .85rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .85rem; }
+.cards > section { margin-block: 0; }
+form { display: grid; gap: .7rem; margin-block: .75rem; max-width: 44rem; }
+label { display: grid; gap: .25rem; }
+input, select, textarea, button, .action { font: inherit; padding: .45rem .7rem; border: 1px solid #9db2ab; border-radius: .45rem; }
+input, select, textarea { min-width: 0; max-width: 100%; background: white; color: inherit; }
+button, .action { width: fit-content; background: #165445; color: white; border-color: #165445; cursor: pointer; text-decoration: none; }
+button[aria-current="page"], button:disabled { background: #e6eeeb; color: #284d43; cursor: default; }
+.table { overflow-x: auto; }
+table { width: 100%; text-align: right; border-collapse: collapse; }
+th, td { padding: .55rem; border-bottom: 1px solid #e3eae7; overflow-wrap: anywhere; }
+#message { padding: .65rem .8rem; background: #e3f0ea; border-radius: .45rem; }
+#message[data-error="true"] { background: #fde9e5; color: #7a251c; }
+:focus-visible { outline: 3px solid #bd6a19; outline-offset: 2px; }
